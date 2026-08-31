@@ -75,6 +75,14 @@ test("public page uses the approved mobile app headline", async () => {
   assert.equal(heading, "Get paid $20 to download and join the GoWish Mobile App.");
 });
 
+test("step one introduces the bonus and ongoing GoWish commissions", async () => {
+  const html = await readPage("index.html");
+  const stepOne = html.match(/<h2>Join GoWish<\/h2><\/div>([\s\S]*?)<div class="block">/)?.[1] ?? "";
+  const text = stepOne.replace(/<[^>]+>/g, "").trim();
+  assert.match(text, /Complete the steps below to qualify for your \$20 bonus\./);
+  assert.match(text, /you can continue earning commissions when people shop through your GoWish lists\./);
+});
+
 test("both download areas show accessible app store icons", async () => {
   const html = await readPage("index.html");
   assert.equal(html.split('class="store-icon store-icon-apple"').length - 1, 2);

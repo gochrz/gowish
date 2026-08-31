@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoWish Creator Program</title>
+<meta name="description" content="Get paid to join the GoWish Creator Universe. $20 paid by Venmo after GoWish approves you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const CONFIG = {
+  ENDPOINT: 'https://tough-spaniel-606.convex.site/api',
+
+  CREATOR_BONUS: 20,
+  MANAGER_BONUS: 10,
+  SUPPORT_EMAIL: '',
+  creatorConsentVersion: 'creator-2026-08-31',
+  managerConsentVersion: 'manager-2026-08-31',
+
+  // Show the "I'm a manager" link in the top right. Set false to hide it.
+  SHOW_MANAGER_LINK: true,
+
+  SITE_URL: 'https://www.gowishpartner.com',
+
+  PAY_CYCLE_CREATOR: 'GoWish settles with us every two weeks. We pay out on the next settlement after your approval clears, so figure two to four weeks from approval depending on where you land in the cycle.',
+  PAY_CYCLE_MANAGER: 'GoWish settles with us every two weeks. We pay out on the next settlement after your creators are approved, so figure two to four weeks from approval depending on where you land in the cycle.',
+
+  // The exact steps that make a sign-up count. Confirm with GoWish before going live.
+  GOWISH_STEPS: [
+    {
+      t: 'Download GoWish and create an account',
+      d: 'App Store or Google Play, or go to creators.gowish.com. Use an email you actually check. You will give us this exact email on the form below, and it is the only way we can match you.'
+    },
+    {
+      t: 'Open the creator section and apply',
+      d: 'Inside the app, go to your profile, then About, then the Creator Program. Apply and connect your Instagram or TikTok.'
+    },
+    {
+      t: 'Finish your profile',
+      d: 'Upload a profile photo and a cover image. A blank profile is the most common reason an application sits unapproved.'
+    },
+    {
+      t: 'Build one list with at least one product',
+      d: 'Pick anything you would genuinely recommend. GoWish works with 75,000+ brands, so almost everything you already post about is in there.'
+    },
+    {
+      t: 'Wait for approval',
+      d: 'Usually 24 to 72 hours. You will hear from GoWish directly. Approval is GoWish\'s decision, not ours, and your bonus is tied to it.'
+    }
+  ]
+};
+</script>
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper:#EAEDF2;
+  --surface:#FFFFFF;
+  --ink:#0F1319;
+  --muted:#5C6673;
+  --faint:#8B95A3;
+  --line:#D7DCE4;
+  --line-soft:#E7EAF0;
+  --blue:#2743E8;
+  --blue-soft:#E7EAFE;
+  --green:#0B6E45;
+  --green-soft:#E0F1E8;
+  --amber:#8A5300;
+  --amber-soft:#FBF0DA;
+  --red:#A32218;
+  --red-soft:#FBE6E4;
+
+  --display:'Fraunces',Georgia,serif;
+  --body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+
+  --r:10px;
+  --wrap:660px;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3{
+  font-family:var(--display);
+  font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 40;
+  font-weight:600;
+  letter-spacing:-0.015em;
+  line-height:1.12;
+  margin:0;
+}
+h1{font-size:clamp(32px,6.5vw,46px)}
+h2{font-size:clamp(23px,4vw,29px)}
+h3{font-size:19px;line-height:1.3}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+a{color:var(--blue)}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--faint);
+}
+.lede{font-size:17.5px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted)}
+.tiny{font-size:12.5px;color:var(--faint);line-height:1.5}
+strong{font-weight:600}
+
+/* ============================================================
+   FRAME
+   ============================================================ */
+.topbar{
+  border-bottom:1px solid var(--line);
+  background:rgba(234,237,242,.88);
+  backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:20;
+}
+.topbar-in{
+  max-width:var(--wrap);margin:0 auto;padding:13px 22px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+}
+.topbar-in .dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex:none}
+.brandwrap{
+  display:flex;align-items:center;gap:9px;
+  margin-left:auto;margin-right:auto;color:var(--faint);
+}
+.backtop{
+  display:none;align-items:center;gap:7px;
+  background:none;border:0;padding:4px 10px 4px 0;margin:0;
+  font:inherit;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);cursor:pointer;
+  border-radius:6px;transition:color .12s;
+}
+.backtop.on{display:inline-flex}
+.backtop:hover{color:var(--ink)}
+.backtop:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.backtop .arw{font-size:15px;line-height:1}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 22px 90px}
+.view{display:none}
+.view.on{display:block;animation:rise .45s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.hero{padding:56px 0 30px}
+.hero h1{margin-bottom:16px}
+.hero .lede{max-width:52ch}
+
+.block{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:26px;
+  margin-bottom:16px;
+}
+.block > h2, .block > h3{margin-bottom:12px}
+section{margin-top:34px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+
+/* ============================================================
+   SIGNATURE — the payout ledger
+   ============================================================ */
+.ledger{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  overflow:hidden;
+  margin-bottom:16px;
+}
+.ledger-row{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 22px;
+  border-bottom:1px solid var(--line-soft);
+}
+.ledger-row:last-child{border-bottom:0}
+.ledger-row .who{flex:1;min-width:0}
+.ledger-row .who b{display:block;font-weight:600;font-size:15.5px}
+.ledger-row .who span{font-size:13.5px;color:var(--muted)}
+.amt{
+  font-family:var(--mono);font-weight:700;font-size:22px;
+  letter-spacing:-.02em;white-space:nowrap;
+}
+.amt.pos{color:var(--green)}
+.ledger-row.total{background:#FAFBFC}
+.ledger-row.total .who b{color:var(--muted);font-weight:500;font-size:14px}
+
+/* ============================================================
+   STEPS
+   ============================================================ */
+.steps{counter-reset:s;list-style:none;margin:0;padding:0}
+.steps li{
+  counter-increment:s;
+  display:flex;gap:16px;
+  padding:16px 0;
+  border-top:1px solid var(--line-soft);
+}
+.steps li:first-child{border-top:0;padding-top:2px}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--blue);padding-top:4px;flex:none;
+}
+.steps li h3{margin-bottom:3px}
+.steps li p{font-size:14.5px;color:var(--muted);margin:0}
+
+/* ============================================================
+   CALLOUTS
+   ============================================================ */
+.note{
+  border-radius:var(--r);
+  padding:16px 18px;
+  font-size:14.5px;
+  line-height:1.55;
+  margin-bottom:16px;
+}
+.note.warn{background:var(--amber-soft);color:var(--amber);border:1px solid #EFDDB6}
+.note.info{background:var(--blue-soft);color:#1B2F9E;border:1px solid #CBD4FB}
+.note.good{background:var(--green-soft);color:var(--green);border:1px solid #C2E0D0}
+.note b{font-weight:600}
+.note a{color:inherit}
+
+/* ============================================================
+   PATH CARDS
+   ============================================================ */
+.paths{display:grid;gap:14px;grid-template-columns:1fr 1fr;margin-top:8px}
+@media(max-width:600px){.paths{grid-template-columns:1fr}}
+.path{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  display:flex;flex-direction:column;gap:8px;
+  transition:border-color .15s,transform .15s,box-shadow .15s;
+}
+.path:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,19,25,.07)}
+.path .pill{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--green);background:var(--green-soft);border-radius:20px;
+  padding:3px 9px;align-self:flex-start;font-weight:500;
+}
+.path h3{font-size:20px}
+.path p{font-size:14px;color:var(--muted);margin:0;flex:1}
+.path .go{font-size:14px;font-weight:600;color:var(--blue)}
+
+/* ============================================================
+   FORM
+   ============================================================ */
+form{margin:0}
+.field{margin-bottom:17px}
+.field.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.field.split{grid-template-columns:1fr}}
+label{
+  display:block;font-size:13.5px;font-weight:600;margin-bottom:5px;
+}
+label .opt{font-weight:400;color:var(--faint)}
+.hint{font-size:12.5px;color:var(--muted);margin:-1px 0 6px;line-height:1.45}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{
+  width:100%;padding:11px 13px;font:inherit;font-size:15.5px;
+  border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);
+  transition:border-color .12s,box-shadow .12s;
+}
+textarea{min-height:78px;resize:vertical}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);
+}
+input.err,select.err{border-color:var(--red);background:#FFFCFC}
+.prefix{display:flex;align-items:stretch}
+.prefix .tag{
+  display:flex;align-items:center;padding:0 12px;
+  border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;
+  background:#F4F6F9;color:var(--muted);font-family:var(--mono);font-size:15px;
+}
+.prefix input{border-radius:0 8px 8px 0}
+.mono-in{font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+
+.field.critical{
+  background:var(--amber-soft);border:1px solid #EFDDB6;
+  border-radius:var(--r);padding:16px 18px;margin-bottom:20px;
+}
+.field.critical label{color:var(--amber)}
+.field.critical .hint{color:var(--amber);opacity:.9}
+
+.check{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer}
+.check input{margin:3px 0 0;width:17px;height:17px;flex:none;accent-color:var(--blue)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;padding:15px 22px;font:inherit;font-size:16px;font-weight:600;
+  background:var(--ink);color:#fff;border:0;border-radius:8px;cursor:pointer;
+  transition:opacity .15s,transform .1s;
+}
+.btn:hover{opacity:.87}
+.btn:active{transform:scale(.995)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.ghost{
+  background:transparent;color:var(--muted);border:1px solid var(--line);
+  width:auto;padding:10px 18px;font-size:14px;font-weight:500;
+}
+.btn.ghost:hover{border-color:var(--ink);color:var(--ink);opacity:1}
+
+.formerr{
+  background:var(--red-soft);border:1px solid #F0C7C3;color:var(--red);
+  border-radius:8px;padding:13px 15px;font-size:14px;margin-bottom:16px;display:none;
+}
+.formerr.on{display:block}
+.hp{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+.codecheck{font-size:13px;margin-top:6px;min-height:18px;font-weight:500}
+.codecheck.ok{color:var(--green)}
+.codecheck.bad{color:var(--red)}
+.codecheck.wait{color:var(--faint)}
+
+/* ============================================================
+   SUCCESS
+   ============================================================ */
+.done{text-align:center;padding:34px 26px}
+.done .mark{
+  width:46px;height:46px;border-radius:50%;background:var(--green-soft);
+  color:var(--green);display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;font-size:22px;
+}
+.codebox{
+  background:var(--ink);color:#fff;border-radius:var(--r);
+  padding:24px;margin:22px 0;text-align:center;
+}
+.codebox .lbl{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#8B95A3;margin-bottom:8px;
+}
+.codebox .code{
+  font-family:var(--mono);font-size:38px;font-weight:700;letter-spacing:.1em;
+  line-height:1.1;
+}
+.copyrow{display:flex;gap:9px;margin-top:16px}
+.copyrow input{
+  flex:1;font-family:var(--mono);font-size:12.5px;padding:10px 12px;
+  background:#1B2029;border:1px solid #333B47;color:#C9D1DB;border-radius:7px;
+}
+.copyrow button{
+  padding:10px 16px;font:inherit;font-size:13px;font-weight:600;
+  background:#fff;color:var(--ink);border:0;border-radius:7px;cursor:pointer;white-space:nowrap;
+}
+
+.spinner{
+  width:15px;height:15px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.foot{
+  margin-top:44px;padding-top:22px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--faint);line-height:1.6;
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+/* split rows: keep the inputs on a shared baseline even when only one
+   column carries a hint line under its label */
+.field.split > div{display:flex;flex-direction:column}
+.field.split > div > .prefix,
+.field.split > div > input,
+.field.split > div > select,
+.field.split > div > textarea{margin-top:auto}
+
+/* tighter hero so the offer and the form sit closer to the fold */
+.hero{padding:36px 0 24px}
+.hero .lede{font-size:17px}
+
+/* topbar manager link */
+.topmanager{
+  display:none;margin-left:auto;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  border:1px solid var(--line);border-radius:20px;padding:6px 13px;background:#fff;
+  transition:border-color .15s,color .15s;white-space:nowrap;cursor:pointer;
+}
+.topmanager.on{display:inline-block}
+.topmanager:hover{border-color:var(--ink);color:var(--ink)}
+.topmanager:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media(max-width:420px){.topmanager{font-size:10px;padding:5px 10px;letter-spacing:.06em}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <button class="backtop" id="backtop" aria-label="Back">
+      <span class="arw" aria-hidden="true">&larr;</span><span>Back</span>
+    </button>
+    <span class="brandwrap"><span class="dot"></span><span>GoWish Partner</span></span>
+    <button class="topmanager" id="topManager" data-go="manager">I'm a manager</button>
+  </div>
+</div>
+
+<div id="setupbar" style="display:none">
+  <div style="max-width:660px;margin:0 auto;padding:12px 22px">
+    <div class="note warn" style="margin:14px 0 0">
+      <b>Setup not finished.</b> This page has no backend attached, so nothing will save.
+      Paste your Convex <code>.convex.site/api</code> URL into <code>CONFIG.ENDPOINT</code> near the top of this file.
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<div class="view on" id="v-main">
+  <div class="hero">
+    <div class="eyebrow" style="margin-bottom:14px">Paid sign-up bonus</div>
+    <h1>Get paid $<span class="v-creator">20</span> to join the GoWish Creator Program.</h1>
+    <p class="lede">GoWish pays us to bring creators into their Creator Universe. We pass a chunk of it straight to you. Join, get approved, get a Venmo.</p>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-row">
+      <div class="who"><b>Your sign-up bonus</b><span>Once GoWish approves your creator account</span></div>
+      <div class="amt pos" id="l-creator">$20</div>
+    </div>
+  </div>
+
+  <section style="margin-top:26px">
+    <div class="sec-head"><div class="eyebrow">Step one</div><h2>Join GoWish</h2></div>
+    <div class="block">
+      <ol class="steps" id="creator-steps"></ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">Step two</div><h2>Tell us where to send the money</h2></div>
+    <div class="note warn">
+      <b>The email matters.</b> We can only pay you if we can match you to your GoWish account, and that match is made on the email you used to create it. Guess it and the payment does not happen.
+    </div>
+    <div class="block">
+      <div class="formerr" id="cErr"></div>
+      <form id="creatorForm" novalidate>
+
+        <div class="field split">
+          <div>
+            <label for="c-name">Full name</label>
+            <input type="text" id="c-name" name="fullName" autocomplete="name">
+          </div>
+          <div>
+            <label for="c-phone">Phone <span class="opt">optional</span></label>
+            <input type="tel" id="c-phone" name="phone" autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="c-contact">Your contact email</label>
+          <div class="hint">Used if we need to verify your submission or payment details.</div>
+          <input type="email" id="c-contact" name="contactEmail" autocomplete="email">
+        </div>
+
+        <div class="field critical">
+          <label for="c-gowish">The email on your GoWish account</label>
+          <div class="hint">This is the one that matters. Open the GoWish app and check it if you are not certain. If this does not match, we cannot prove you came from us and nobody gets paid.</div>
+          <input type="email" id="c-gowish" name="gowishEmail">
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="c-country">Country</label>
+            <select id="c-country" name="country">
+              <option value="">Select</option>
+              <option>United States</option>
+            </select>
+          </div>
+          <div></div>
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="c-platform">Main platform</label>
+            <select id="c-platform" name="platform">
+              <option value="">Select</option>
+              <option>Instagram</option>
+              <option>TikTok</option>
+              <option>YouTube</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="c-followers">Followers there</label>
+            <input type="text" id="c-followers" name="followers" placeholder="e.g. 42000" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="c-handle">Your handle on that platform</label>
+          <div class="prefix">
+            <span class="tag">@</span>
+            <input type="text" id="c-handle" name="handle" autocapitalize="none" spellcheck="false">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="c-other">Other handles <span class="opt">optional</span></label>
+          <input type="text" id="c-other" name="otherHandles" placeholder="TikTok @you, YouTube @you">
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="c-venmo">Your Venmo handle</label>
+            <div class="hint" style="margin-top:0">Where we send your $<span class="v-creator">20</span>.</div>
+            <div class="prefix">
+              <span class="tag">@</span>
+              <input type="text" id="c-venmo" name="venmoHandle" autocapitalize="none" spellcheck="false">
+            </div>
+          </div>
+          <div>
+            <label for="c-venmoname">Name on that Venmo</label>
+            <div class="hint" style="margin-top:0">So we know we sent it to the right person.</div>
+            <input type="text" id="c-venmoname" name="venmoLegalName">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="c-code">Referral code <span class="opt">optional</span></label>
+          <div class="hint">If someone sent you here with a code, put it in. It does not change your $<span class="v-creator">20</span>.</div>
+          <input type="text" id="c-code" name="refCode" class="mono-in" maxlength="8" placeholder="Optional" autocapitalize="characters" spellcheck="false">
+          <div class="codecheck" id="codecheck"></div>
+        </div>
+
+        <div class="field" style="margin-top:22px">
+          <label class="check">
+            <input type="checkbox" id="c-agree">
+            <span>I have created my GoWish account and applied to the Creator Program. I understand the $<span class="v-creator">20</span> is paid after GoWish approves me and after GoWish settles with the partner running this program, one payout per person, and that approvals are not controlled by this program.</span>
+          </label>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="c-website">Website</label>
+          <input type="text" id="c-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn" id="cBtn">Submit and claim my $<span class="v-creator">20</span></button>
+        <p class="tiny" style="margin-top:12px">We use your details to confirm your sign-up with GoWish and to send your payment. Nothing else.</p>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">Background</div><h2>What GoWish actually is</h2></div>
+    <div class="block">
+      <p class="small">GoWish is a wishlist and social shopping app. Creators build lists of products they would recommend anyway, share one link, and earn commission every time a follower buys through it. The lists are permanent, so unlike a story link it keeps earning after 24 hours.</p>
+      <p class="small">The Creator Universe works with 75,000+ brands including Nike, Sephora, Lululemon, Skims, UGG and Target. Onboarding is fast, usually inside a day.</p>
+      <p class="small">Whatever you earn on GoWish is separate from our bonus. You keep both.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">Background</div><h2>When you actually get paid</h2></div>
+    <div class="block">
+      <p class="small">GoWish pays us for creators they approve. We pay you out of that. <span class="pay-cycle-creator"></span></p>
+      <p class="small">So the sequence is: you get approved, GoWish counts you in their next settlement, that money reaches us, we send your $<span class="v-creator">20</span> to your Venmo. We are not sitting on it, we just cannot send money we have not received yet.</p>
+      <p class="small">Approval is GoWish's call, not ours, and we pay on approved accounts only. If your approval is confirmed and a cycle passes without payment, keep your reference available so the payment can be reviewed.</p>
+    </div>
+  </section>
+
+  <div class="foot">
+    We are an independent partner of GoWish. We are not GoWish, we do not decide who gets approved, and the bonus is paid by us and not by GoWish.
+  </div>
+</div>
+
+<div class="view" id="v-done">
+  <div class="block done">
+    <div class="mark">&#10003;</div>
+    <h2 style="margin-bottom:10px">You're in.</h2>
+    <p class="small" style="max-width:46ch;margin:0 auto 18px">We have your details. Reference <b id="cRef" class="mono-in"></b>. We confirm your approval with GoWish, and once GoWish settles that batch with us we send $<span class="v-creator">20</span> to your Venmo.</p>
+    <p class="tiny" style="max-width:46ch;margin:0 auto"><span class="pay-cycle-creator"></span></p>
+  </div>
+
+  <div class="note warn">
+    <b>One thing left.</b> If your GoWish profile is not finished, do it now. Profile photo, cover image, and one list with at least one product. GoWish will not approve an empty profile, and we can only pay on approved accounts.
+  </div>
+
+  <div class="block">
+    <h3 style="margin-bottom:10px">While you wait</h3>
+    <p class="small">Share your GoWish link once on your stories or in your bio. That is how the commission side starts working, and it is separate money from the bonus.</p>
+    <p class="small">If anything about your submission was wrong, keep your reference and contact the partner or manager who sent you this page before payment goes out.</p>
+  </div>
+</div>
+
+<div class="view" id="v-manager">
+  <div class="hero">
+    <div class="eyebrow" style="margin-bottom:14px">Manager arrangement</div>
+    <h1>$<span class="v-manager">10</span> for every creator you bring who gets approved.</h1>
+    <p class="lede">Register once. You get a code. Every creator who signs up with that code and gets approved by GoWish pays you $<span class="v-manager">10</span>. No cap, no exclusivity, nothing to sign.</p>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-row">
+      <div class="who"><b>You get</b><span>Per approved creator, paid to your Venmo</span></div>
+      <div class="amt pos">$<span class="v-manager">10</span></div>
+    </div>
+    <div class="ledger-row">
+      <div class="who"><b>Your creator gets</b><span>Their own sign-up bonus, paid direct to them</span></div>
+      <div class="amt pos">$<span class="v-creator">20</span></div>
+    </div>
+    <div class="ledger-row total">
+      <div class="who"><b>Ten approved creators</b></div>
+      <div class="amt" id="m-ten">$100</div>
+    </div>
+  </div>
+
+  <div class="note info">
+    <b>On what your creators see.</b> The creator page shows their own $<span class="v-creator">20</span> and nothing else. It does not mention managers, does not mention your $<span class="v-manager">10</span>, and the code field is labelled simply as a referral code. How you present this to your roster is your call.
+  </div>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">How it works</div><h2>Four steps</h2></div>
+    <div class="block">
+      <ol class="steps">
+        <li>
+          <div><h3>Register below</h3><p>Name, email, Venmo. Takes a minute. We issue your code immediately on screen.</p></div>
+        </li>
+        <li>
+          <div><h3>Send your creators your link</h3><p>Your code is baked into a link we give you, so your creators do not have to type anything. The link goes to the public creator page, not to this one.</p></div>
+        </li>
+        <li>
+          <div><h3>They sign up on GoWish and get approved</h3><p>They download GoWish, apply to the Creator Program, connect socials and finish their profile. GoWish approves inside 24 to 72 hours in most cases. Approval is GoWish's decision, not ours.</p></div>
+        </li>
+        <li>
+          <div><h3>You get paid</h3><p>We confirm approvals with GoWish, then send you $<span class="v-manager">10</span> per approved creator, straight to Venmo.</p></div>
+        </li>
+      </ol>
+    </div>
+    <div class="note info">
+      <b>The honest version of the deal.</b> GoWish pays us per approved creator. We pass a share to you and a share to the creator, and keep the rest. That is the whole arrangement, and it is why payment is tied to approvals rather than sign-ups.
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">Register</div><h2>Get your code</h2></div>
+    <div class="block">
+      <div class="formerr" id="mErr"></div>
+      <form id="managerForm" novalidate>
+
+        <div class="field split">
+          <div>
+            <label for="m-name">Full name</label>
+            <input type="text" id="m-name" name="fullName" autocomplete="name">
+          </div>
+          <div>
+            <label for="m-company">Company or agency <span class="opt">optional</span></label>
+            <input type="text" id="m-company" name="company">
+          </div>
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="m-email">Email</label>
+            <input type="email" id="m-email" name="email" autocomplete="email">
+          </div>
+          <div>
+            <label for="m-phone">Phone <span class="opt">optional</span></label>
+            <input type="tel" id="m-phone" name="phone" autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="m-social">Your Instagram or LinkedIn <span class="opt">optional</span></label>
+          <input type="text" id="m-social" name="socialHandle" placeholder="@you or a link">
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="m-venmo">Your Venmo handle</label>
+            <div class="hint" style="margin-top:0">Where we send your payouts.</div>
+            <div class="prefix">
+              <span class="tag">@</span>
+              <input type="text" id="m-venmo" name="venmoHandle" autocapitalize="none" spellcheck="false">
+            </div>
+          </div>
+          <div>
+            <label for="m-venmoname">Name on that Venmo</label>
+            <div class="hint" style="margin-top:0">So we know we sent it to the right person.</div>
+            <input type="text" id="m-venmoname" name="venmoLegalName">
+          </div>
+        </div>
+
+        <div class="field split">
+          <div>
+            <label for="m-est">Creators you can bring</label>
+            <select id="m-est" name="estCreators">
+              <option value="">Select</option>
+              <option>1 to 5</option>
+              <option>6 to 20</option>
+              <option>21 to 50</option>
+              <option>51 to 200</option>
+              <option>200+</option>
+            </select>
+          </div>
+          <div>
+            <label for="m-source">Where they come from <span class="opt">optional</span></label>
+            <input type="text" id="m-source" name="source" placeholder="e.g. fashion roster, UGC group">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:22px">
+          <label class="check">
+            <input type="checkbox" id="m-agree">
+            <span>I understand payment is per creator <strong>approved by GoWish</strong>, not per sign-up, that it is paid once GoWish settles that batch with us, and that duplicate or fake accounts are removed before payment.</span>
+          </label>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="m-website">Website</label>
+          <input type="text" id="m-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn" id="mBtn">Register and get my code</button>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="eyebrow">Background</div><h2>Payment timing, plainly</h2></div>
+    <div class="block">
+      <h3 style="margin-bottom:10px">Payment timing, plainly</h3>
+      <p class="small"><span class="pay-cycle-manager"></span></p>
+      <p class="small">We do not front the money. If GoWish has not settled a batch, nobody in that batch has been paid yet, including us. You can ask for your approved count at any point.</p>
+    </div>
+  </section>
+</div>
+
+<div class="view" id="v-mdone">
+  <div class="hero">
+    <h1 id="mDoneTitle">You're registered.</h1>
+    <p class="lede" id="mDoneSub">Here is your code. It never expires and there is only one per person.</p>
+  </div>
+
+  <div class="codebox">
+    <div class="lbl">Your manager code</div>
+    <div class="code" id="mCode">M----</div>
+    <div class="copyrow">
+      <input type="text" id="mLink" readonly>
+      <button type="button" id="mCopy">Copy link</button>
+    </div>
+    <p class="tiny" style="color:#8B95A3;margin-top:12px">This link goes to the public creator page with your code already filled in. Send this, not the page you are on.</p>
+  </div>
+
+  <div class="block">
+    <h3 style="margin-bottom:10px">What to do now</h3>
+    <p class="small">Send the link to your roster with a short note. Something like: <em>GoWish is paying $<span class="v-creator">20</span> to join their creator program, plus commission on brands you already post about. Takes ten minutes. Sign up here.</em></p>
+    <p class="small">Tell them to finish their GoWish profile. Profile photo, cover image, one list with at least one product. Half-finished profiles are the main reason applications stall, and we can only pay on approved accounts.</p>
+    <p class="small">Save this link somewhere safe. Registering again with the same email will return the same code.</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+const VIEWS = ['main','done','manager','mdone'];
+
+function go(name){
+  VIEWS.forEach(v=>{
+    const el = document.getElementById('v-'+v);
+    if(el) el.classList.toggle('on', v===name);
+  });
+  document.getElementById('backtop').classList.toggle('on', name !== 'main');
+  const tm = document.getElementById('topManager');
+  tm.classList.toggle('on', name === 'main' && CONFIG.SHOW_MANAGER_LINK);
+  window.scrollTo({top:0,behavior:'instant'});
+  setUrl(name);
+}
+
+// Sandboxed previews (about:srcdoc, file://) reject history.replaceState.
+// The URL is cosmetic, so failing to set it must never break the page.
+function hostedPage(){
+  return location.protocol === 'http:' || location.protocol === 'https:';
+}
+
+function setUrl(name){
+  if(!hostedPage()) return;
+  try{
+    history.replaceState(null, '', name === 'main'
+      ? location.pathname + location.search
+      : '#' + name);
+  }catch(e){
+    console.warn('[url] replaceState unavailable here, carrying on.', e.message);
+  }
+}
+
+document.addEventListener('click', e=>{
+  const t = e.target.closest('[data-go]');
+  if(t){ e.preventDefault(); go(t.dataset.go); }
+});
+document.getElementById('backtop').addEventListener('click', ()=>go('main'));
+
+async function api(payload){
+  if(!CONFIG.ENDPOINT || CONFIG.ENDPOINT.indexOf('YOUR-DEPLOYMENT') !== -1){
+    console.error('[setup] CONFIG.ENDPOINT is still the placeholder.');
+    throw new Error('Not connected yet: your Convex URL has not been pasted into CONFIG.ENDPOINT.');
+  }
+  let res;
+  try{
+    res = await fetch(CONFIG.ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+      redirect:'follow'
+    });
+  }catch(netErr){
+    console.error('[network]', netErr);
+    if(!hostedPage()){
+      throw new Error('Cannot reach the backend because this page is not being served over http or https. Host the file and try again.');
+    }
+    throw new Error('Cannot reach the backend. Check CONFIG.ENDPOINT ends in .convex.site/api and that you have run npx convex deploy.');
+  }
+  const raw = await res.text();
+  let data;
+  try{
+    data = JSON.parse(raw);
+  }catch(parseErr){
+    console.error('[backend returned non-JSON]', raw.slice(0,400));
+    if(/<!DOCTYPE|<html/i.test(raw)){
+      throw new Error('The backend returned a web page instead of data. That usually means the URL points at .convex.cloud instead of .convex.site, or the /api route is missing.');
+    }
+    throw new Error('The backend sent something unreadable. Check the logs in your Convex dashboard.');
+  }
+  if(!data.ok) throw new Error(data.error || 'Something went wrong.');
+  return data;
+}
+
+function collect(form){
+  const out = {};
+  form.querySelectorAll('input[name], select[name], textarea[name]').forEach(el=>{
+    out[el.name] = el.value.trim();
+  });
+  return out;
+}
+
+function needed(form, names){
+  let bad = null;
+  names.forEach(n=>{
+    const el = form.querySelector('[name="'+n+'"]');
+    if(!el) return;
+    const empty = !el.value.trim();
+    el.classList.toggle('err', empty);
+    if(empty && !bad) bad = el;
+  });
+  return bad;
+}
+
+function fail(boxId, msg){
+  const b = document.getElementById(boxId);
+  b.textContent = msg;
+  b.classList.add('on');
+  b.scrollIntoView({block:'center', behavior:'smooth'});
+}
+function clearFail(boxId){ document.getElementById(boxId).classList.remove('on'); }
+function busy(btn, on, label){
+  btn.disabled = on;
+  btn.innerHTML = on ? '<span class="spinner"></span> Sending' : label;
+}
+
+function creatorUrl(){
+  if(CONFIG.SITE_URL){
+    let u = CONFIG.SITE_URL;
+    while(u.charAt(u.length-1) === '/') u = u.slice(0, -1);
+    return u;
+  }
+  if(!hostedPage()) return 'https://yourdomain.com/gowish';
+  return location.origin + location.pathname;
+}
+
+/* ------------------------------------------------------------------ */
+
+function boot(){
+  document.querySelectorAll('.v-creator').forEach(n=>n.textContent = CONFIG.CREATOR_BONUS);
+  document.querySelectorAll('.v-manager').forEach(n=>n.textContent = CONFIG.MANAGER_BONUS);
+  document.getElementById('l-creator').textContent = '$'+CONFIG.CREATOR_BONUS;
+  document.getElementById('m-ten').textContent = '$'+(CONFIG.MANAGER_BONUS*10);
+
+  document.querySelectorAll('.mail').forEach(a=>{
+    a.textContent = CONFIG.SUPPORT_EMAIL;
+    a.href = 'mailto:'+CONFIG.SUPPORT_EMAIL;
+  });
+
+  document.querySelectorAll('.pay-cycle-creator').forEach(n=>n.textContent = CONFIG.PAY_CYCLE_CREATOR);
+  document.querySelectorAll('.pay-cycle-manager').forEach(n=>n.textContent = CONFIG.PAY_CYCLE_MANAGER);
+
+  document.getElementById('creator-steps').innerHTML = CONFIG.GOWISH_STEPS
+    .map(s=>`<li><div><h3>${s.t}</h3><p>${s.d}</p></div></li>`).join('');
+
+  if(!CONFIG.ENDPOINT || CONFIG.ENDPOINT.indexOf('YOUR-DEPLOYMENT') !== -1){
+    document.getElementById('setupbar').style.display = 'block';
+  }
+
+  const code = new URLSearchParams(location.search).get('code');
+  if(code){
+    document.getElementById('c-code').value = code.toUpperCase();
+    checkCode();
+  }
+
+  go(location.hash === '#manager' ? 'manager' : 'main');
+}
+
+/* ---------------- creator ---------------- */
+
+let codeTimer;
+async function checkCode(){
+  const el = document.getElementById('c-code');
+  const out = document.getElementById('codecheck');
+  const v = el.value.trim().toUpperCase();
+  el.value = v;
+  out.className = 'codecheck';
+  if(!v){ out.textContent = ''; return; }
+  out.classList.add('wait');
+  out.textContent = 'Checking...';
+  try{
+    await api({action:'validateCode', code:v});
+    out.className = 'codecheck ok';
+    out.textContent = '\u2713 Code applied';
+  }catch(err){
+    out.className = 'codecheck bad';
+    out.textContent = 'That code was not recognised. You can leave it blank.';
+  }
+}
+
+document.getElementById('c-code').addEventListener('input', ()=>{
+  clearTimeout(codeTimer);
+  codeTimer = setTimeout(checkCode, 600);
+});
+
+document.getElementById('creatorForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  clearFail('cErr');
+  const form = e.target;
+  const btn = document.getElementById('cBtn');
+  const label = 'Submit and claim my $' + CONFIG.CREATOR_BONUS;
+
+  const bad = needed(form, ['fullName','contactEmail','gowishEmail','country',
+                            'platform','handle','followers','venmoHandle','venmoLegalName']);
+  if(bad){ fail('cErr','Fill in the highlighted fields.'); bad.focus(); return; }
+  if(!document.getElementById('c-agree').checked){
+    fail('cErr','Tick the box to confirm you have created your GoWish account.'); return;
+  }
+
+  busy(btn, true);
+  try{
+    const d = collect(form);
+    d.action = 'submitCreator';
+    d.consentAccepted = document.getElementById('c-agree').checked;
+    d.consentVersion = CONFIG.creatorConsentVersion;
+    const r = await api(d);
+    document.getElementById('cRef').textContent = r.id;
+    go('done');
+  }catch(err){
+    fail('cErr', err.message);
+  }finally{
+    busy(btn, false, label);
+  }
+});
+
+/* ---------------- manager ---------------- */
+
+document.getElementById('managerForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  clearFail('mErr');
+  const form = e.target;
+  const btn = document.getElementById('mBtn');
+
+  const bad = needed(form, ['fullName','email','venmoHandle','venmoLegalName','estCreators']);
+  if(bad){ fail('mErr','Fill in the highlighted fields.'); bad.focus(); return; }
+  if(!document.getElementById('m-agree').checked){
+    fail('mErr','Tick the box to confirm you understand how payment works.'); return;
+  }
+
+  busy(btn, true);
+  try{
+    const d = collect(form);
+    d.action = 'registerManager';
+    d.consentAccepted = document.getElementById('m-agree').checked;
+    d.consentVersion = CONFIG.managerConsentVersion;
+    const r = await api(d);
+    document.getElementById('mCode').textContent = r.code;
+    document.getElementById('mLink').value = creatorUrl() + '?code=' + r.code;
+    if(r.duplicate){
+      document.getElementById('mDoneTitle').textContent = 'You already have a code.';
+      document.getElementById('mDoneSub').textContent = 'This email is already registered, so here is your existing code rather than a new one.';
+    }
+    go('mdone');
+  }catch(err){
+    fail('mErr', err.message);
+  }finally{
+    busy(btn, false, 'Register and get my code');
+  }
+});
+
+document.getElementById('mCopy').addEventListener('click', async ()=>{
+  const input = document.getElementById('mLink');
+  const btn = document.getElementById('mCopy');
+  try{ await navigator.clipboard.writeText(input.value); }
+  catch(e){ input.select(); document.execCommand('copy'); }
+  btn.textContent = 'Copied';
+  setTimeout(()=>btn.textContent = 'Copy link', 1800);
+});
+
+boot();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "gowish-intake",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:static": "node --test tests/static-pages.test.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p convex/tsconfig.json",
+    "verify": "npm test && npm run test:static && npm run typecheck"
+  },
+  "dependencies": {
+    "@convex-dev/rate-limiter": "0.3.2",
+    "convex": "1.45.0"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "5.0.0",
+    "@types/node": "24.10.13",
+    "convex-test": "0.0.56",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

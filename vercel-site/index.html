@@ -221,11 +221,12 @@ section{margin-top:34px}
 .steps li p{font-size:14.5px;color:var(--muted);margin:0}
 .store-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .store-link{
-  display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;
   padding:10px 16px;border:1px solid var(--ink);border-radius:8px;
   background:var(--ink);color:#fff;text-decoration:none;font-size:14px;font-weight:600;
   transition:transform .12s,box-shadow .12s;
 }
+.store-icon{width:19px;height:19px;display:block;flex:none}
 .store-link:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(15,19,25,.14)}
 .store-link:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .store-links + .small{margin-top:16px}
@@ -440,7 +441,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 <div class="view on" id="v-main">
   <div class="hero">
     <div class="eyebrow" style="margin-bottom:14px">Paid sign-up bonus</div>
-    <h1>Get paid $<span class="v-creator">20</span> to join the GoWish Creator Program.</h1>
+    <h1>Get paid $<span class="v-creator">20</span> to download and join the GoWish Mobile App.</h1>
     <p class="lede">GoWish pays us to bring creators into their Creator Universe. We pass a chunk of it straight to you. Join, get approved, get paid.</p>
   </div>
 
@@ -456,8 +457,8 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <div class="block">
       <ol class="steps" id="creator-steps"></ol>
       <div class="store-links" aria-label="Download GoWish">
-        <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
-        <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
+        <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-apple" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.32.03-1.75-.79-3.27-.79-1.53 0-2.01.77-3.26.82-1.3.05-2.29-1.33-3.13-2.57C4.25 16.9 2.9 12.28 4.7 9.15a4.88 4.88 0 0 1 4.14-2.51c1.29-.03 2.51.87 3.29.87.76 0 2.19-1.08 3.7-.92.63.03 2.39.25 3.52 1.91-.09.06-2.1 1.22-2.08 3.74.03 3.01 2.64 4.02 2.67 4.03-.03.07-.42 1.44-1.23 2.92M13 3.3a4.31 4.31 0 0 1 2.8-1.44 4.1 4.1 0 0 1-1 2.98 3.58 3.58 0 0 1-2.82 1.33A3.65 3.65 0 0 1 13 3.3z"/></svg><span>Download on the App Store</span></a>
+        <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-google-play" aria-hidden="true" viewBox="0 0 24 24"><path fill="#00d5ff" d="M3.3 2.25a1.8 1.8 0 0 0-.3 1v17.5c0 .37.11.72.3 1l9.63-9.76z"/><path fill="#ffd500" d="m12.93 12-9.63 9.75c.5.54 1.27.64 1.9.28l11.28-6.47z"/><path fill="#ff3a44" d="m12.93 12 3.55 3.56 3.96-2.27c.75-.43.75-1.5 0-1.93l-3.91-2.25z"/><path fill="#00ef77" d="M3.3 2.25 12.93 12l3.6-2.89L5.2 2.07a1.62 1.62 0 0 0-1.9.18z"/></svg><span>Get it on Google Play</span></a>
       </div>
     </div>
   </section>
@@ -623,8 +624,8 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <h3 style="margin-bottom:10px">Open GoWish</h3>
     <p class="small">Download or open the GoWish app to finish your profile and track your approval.</p>
     <div class="store-links" aria-label="Download GoWish">
-      <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
-      <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
+      <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-apple" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.32.03-1.75-.79-3.27-.79-1.53 0-2.01.77-3.26.82-1.3.05-2.29-1.33-3.13-2.57C4.25 16.9 2.9 12.28 4.7 9.15a4.88 4.88 0 0 1 4.14-2.51c1.29-.03 2.51.87 3.29.87.76 0 2.19-1.08 3.7-.92.63.03 2.39.25 3.52 1.91-.09.06-2.1 1.22-2.08 3.74.03 3.01 2.64 4.02 2.67 4.03-.03.07-.42 1.44-1.23 2.92M13 3.3a4.31 4.31 0 0 1 2.8-1.44 4.1 4.1 0 0 1-1 2.98 3.58 3.58 0 0 1-2.82 1.33A3.65 3.65 0 0 1 13 3.3z"/></svg><span>Download on the App Store</span></a>
+      <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-google-play" aria-hidden="true" viewBox="0 0 24 24"><path fill="#00d5ff" d="M3.3 2.25a1.8 1.8 0 0 0-.3 1v17.5c0 .37.11.72.3 1l9.63-9.76z"/><path fill="#ffd500" d="m12.93 12-9.63 9.75c.5.54 1.27.64 1.9.28l11.28-6.47z"/><path fill="#ff3a44" d="m12.93 12 3.55 3.56 3.96-2.27c.75-.43.75-1.5 0-1.93l-3.91-2.25z"/><path fill="#00ef77" d="M3.3 2.25 12.93 12l3.6-2.89L5.2 2.07a1.62 1.62 0 0 0-1.9.18z"/></svg><span>Get it on Google Play</span></a>
     </div>
     <p class="small">If anything about your submission was wrong, keep your reference and contact the partner or manager who sent you this page before payment goes out.</p>
   </div>

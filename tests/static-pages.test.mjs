@@ -69,6 +69,20 @@ test("public page links directly to both app stores before and after submission"
   assert.ok(html.split(googlePlay).length - 1 >= 2);
 });
 
+test("public page uses the approved mobile app headline", async () => {
+  const html = await readPage("index.html");
+  const heading = html.match(/<h1>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]+>/g, "") ?? "";
+  assert.equal(heading, "Get paid $20 to download and join the GoWish Mobile App.");
+});
+
+test("both download areas show accessible app store icons", async () => {
+  const html = await readPage("index.html");
+  assert.equal(html.split('class="store-icon store-icon-apple"').length - 1, 2);
+  assert.equal(html.split('class="store-icon store-icon-google-play"').length - 1, 2);
+  assert.equal(html.split('class="store-icon store-icon-apple" aria-hidden="true"').length - 1, 2);
+  assert.equal(html.split('class="store-icon store-icon-google-play" aria-hidden="true"').length - 1, 2);
+});
+
 test("creator confirmation gives actionable app steps without email or story instructions", async () => {
   const html = await readPage("index.html");
   const confirmation = html.match(/<div class="view" id="v-done">([\s\S]*?)<div class="view" id="v-manager">/)?.[1] ?? "";

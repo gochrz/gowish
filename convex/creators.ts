@@ -2,13 +2,14 @@ import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { recordAudit } from "./audit";
 import { limitRegistration } from "./rateLimits";
-import { platform } from "./schema";
+import { payoutMethod, platform } from "./schema";
 import { changeProgramStats } from "./stats";
 import {
   businessError,
   normalizeCode,
   normalizeEmail,
   normalizeHandle,
+  normalizePayout,
   optional,
   requireConsent,
   required,
@@ -46,8 +47,9 @@ export const submit = internalMutation({
     handle: v.string(),
     followers: v.string(),
     otherHandles: v.optional(v.string()),
-    venmoHandle: v.string(),
-    venmoLegalName: v.string(),
+    payoutMethod,
+    payoutDestination: v.string(),
+    payoutLegalName: v.string(),
     managerCode: v.optional(v.string()),
     consentAccepted: v.boolean(),
     consentVersion: v.string(),
@@ -120,6 +122,7 @@ export const submit = internalMutation({
       throw new Error("Could not allocate a unique creator reference.");
     }
 
+    const payout = normalizePayout(args.payoutMethod, args.payoutDestination, args.payoutLegalName);
     const creatorId = await ctx.db.insert("creators", {
       reference,
       fullName: required(args.fullName, 120, "Name"),
@@ -131,8 +134,7 @@ export const submit = internalMutation({
       handle: normalizeHandle(args.handle, "Social handle"),
       followers: normalizeFollowers(args.followers),
       otherHandles: optional(args.otherHandles, 300, "Other handles"),
-      venmoHandle: normalizeHandle(args.venmoHandle, "Venmo handle"),
-      venmoLegalName: required(args.venmoLegalName, 120, "Venmo legal name"),
+      ...payout,
       managerCode: manager?.code,
       managerId: manager?._id,
       status: "submitted",

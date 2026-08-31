@@ -34,6 +34,23 @@ test("public page presents the United States as the only eligible country", asyn
   assert.doesNotMatch(country, /<option>Other<\/option>/);
 });
 
+test("public forms offer Venmo or Apple Cash with conditional payout details", async () => {
+  const html = await readPage("index.html");
+  assert.match(html, /name="payoutMethod"[^>]*value="venmo"/);
+  assert.match(html, /name="payoutMethod"[^>]*value="apple_cash"/);
+  assert.match(html, /Apple Cash phone number or email/);
+  assert.match(html, /payoutDestination/);
+  assert.match(html, /payoutLegalName/);
+  assert.match(html, /syncPayoutFields/);
+});
+
+test("public copy does not promise Venmo as the only payout method", async () => {
+  const html = await readPage("index.html");
+  assert.doesNotMatch(html, /send[^.]{0,80}to your Venmo/i);
+  assert.doesNotMatch(html, /paid direct to their Venmo/i);
+  assert.match(html, /preferred payout method/i);
+});
+
 test("admin page targets the development admin endpoint", async () => {
   const html = await readPage("admin.html");
   assert.match(html, /https:\/\/tough-spaniel-606\.convex\.site\/admin/);
@@ -45,6 +62,17 @@ test("admin page confirms payout changes and supports undo", async () => {
   assert.match(html, /Confirm manager payout/i);
   assert.match(html, /Undo creator paid/i);
   assert.match(html, /Undo manager paid/i);
+});
+
+test("admin page displays and edits normalized payout details", async () => {
+  const html = await readPage("admin.html");
+  assert.match(html, /Payout method/);
+  assert.match(html, /Payout destination/);
+  assert.match(html, /Payout name/);
+  assert.match(html, /editPayoutMethod/);
+  assert.match(html, /editPayoutDestination/);
+  assert.match(html, /editPayoutName/);
+  assert.doesNotMatch(html, /<th>Venmo<\/th>/);
 });
 
 test("inline page scripts parse", async () => {

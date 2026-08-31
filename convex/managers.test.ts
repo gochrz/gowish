@@ -18,8 +18,9 @@ const registration = {
   phone: " +1 555 111 2222 ",
   company: " North Studio ",
   socialHandle: " @morgan ",
-  venmoHandle: " @@morgan-pay ",
-  venmoLegalName: " Morgan Reed ",
+  payoutMethod: "venmo" as const,
+  payoutDestination: " @@morgan-pay ",
+  payoutLegalName: " Morgan Reed ",
   estCreators: "6 to 20",
   source: " UGC roster ",
   consentAccepted: true,
@@ -47,7 +48,9 @@ describe("manager registration", () => {
     expect(state.managers[0]).toMatchObject({
       email: "morgan@example.com",
       fullName: "Morgan Reed",
-      venmoHandle: "@morgan-pay",
+      payoutMethod: "venmo",
+      payoutDestination: "@morgan-pay",
+      payoutLegalName: "Morgan Reed",
       enabled: true,
       consentAccepted: true,
       consentVersion: "manager-2026-08-31",
@@ -94,6 +97,34 @@ describe("manager registration", () => {
         consentAccepted: false,
       }),
     ).rejects.toThrow("Consent is required");
+  });
+
+  test("stores a normalized Apple Cash email", async () => {
+    const t = setup();
+    await t.mutation(internal.managers.register, {
+      ...registration,
+      payoutMethod: "apple_cash",
+      payoutDestination: " Morgan.Payments@Example.COM ",
+    });
+
+    const managers = await t.run((ctx) => ctx.db.query("managers").collect());
+    expect(managers[0]).toMatchObject({
+      payoutMethod: "apple_cash",
+      payoutDestination: "morgan.payments@example.com",
+      payoutLegalName: "Morgan Reed",
+    });
+  });
+
+  test("rejects an invalid Apple Cash contact", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.managers.register, {
+        ...registration,
+        payoutMethod: "apple_cash",
+        payoutDestination: "morgan cash",
+      }),
+    ).rejects.toThrow("Apple Cash phone number or email is invalid");
   });
 
   test("rejects unsupported manager consent versions", async () => {

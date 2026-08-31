@@ -19,8 +19,9 @@ function managerArgs(suffix = "base") {
     phone: "+1 555 111 2222",
     company: "North Studio",
     socialHandle: "@morgan",
-    venmoHandle: "@morgan-pay",
-    venmoLegalName: "Morgan Reed",
+    payoutMethod: "venmo" as const,
+    payoutDestination: "@morgan-pay",
+    payoutLegalName: "Morgan Reed",
     estCreators: "6 to 20",
     source: "UGC roster",
     consentAccepted: true,
@@ -43,8 +44,9 @@ function creatorArgs(suffix: string, managerCode?: string) {
     handle: `@creator${suffix}`,
     followers: "42000",
     otherHandles: "TikTok @creator",
-    venmoHandle: `@creator-${suffix}-pay`,
-    venmoLegalName: `Creator ${suffix}`,
+    payoutMethod: "venmo" as const,
+    payoutDestination: `@creator-${suffix}-pay`,
+    payoutLegalName: `Creator ${suffix}`,
     managerCode,
     consentAccepted: true,
     consentVersion: "creator-2026-08-31",
@@ -251,11 +253,19 @@ describe("admin operations", () => {
       t.mutation(internal.admin.updateCreator, {
         id: firstId,
         contactEmail: "corrected@example.com",
-        venmoHandle: "@corrected-venmo",
-        venmoLegalName: "Corrected Person",
+        payoutMethod: "apple_cash",
+        payoutDestination: " corrected@example.com ",
+        payoutLegalName: "Corrected Person",
         reason: "Creator confirmed corrected payment details",
       }),
-    ).resolves.toEqual({ ok: true, updatedFields: 3 });
+    ).resolves.toEqual({ ok: true, updatedFields: 4 });
+
+    const corrected = await t.query(internal.admin.listCreators, { limit: 20 });
+    expect(corrected.find((row) => row.id === firstId)).toMatchObject({
+      payoutMethod: "apple_cash",
+      payoutDestination: "corrected@example.com",
+      payoutLegalName: "Corrected Person",
+    });
 
     await t.mutation(internal.admin.setStatus, {
       ids: [firstId],
@@ -271,7 +281,7 @@ describe("admin operations", () => {
     await expect(
       t.mutation(internal.admin.updateCreator, {
         id: firstId,
-        venmoHandle: "@after-payment",
+        payoutDestination: "after-payment@example.com",
         reason: "Late correction",
       }),
     ).rejects.toThrow("after the creator payout is marked paid");
@@ -313,8 +323,9 @@ describe("admin operations", () => {
       id: creatorId,
       contactEmail: "creator-contract@example.com",
       gowishEmail: "creator-contract@gowish.example.com",
-      venmoHandle: "@creator-contract-pay",
-      venmoLegalName: "Creator contract",
+      payoutMethod: "venmo",
+      payoutDestination: "@creator-contract-pay",
+      payoutLegalName: "Creator contract",
       notes: "Creator confirmed the correction by phone.",
     });
 

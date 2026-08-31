@@ -2,13 +2,13 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { recordAudit } from "./audit";
-import { attributionState, creatorStatus } from "./schema";
+import { attributionState, creatorStatus, payoutMethod } from "./schema";
 import { changeProgramStats, ensureProgramStats } from "./stats";
 import {
   businessError,
   normalizeCode,
   normalizeEmail,
-  normalizeHandle,
+  normalizePayout,
   required,
 } from "./validation";
 
@@ -34,8 +34,9 @@ const creatorRow = v.object({
   handle: v.string(),
   followers: v.string(),
   otherHandles: v.string(),
-  venmoHandle: v.string(),
-  venmoLegalName: v.string(),
+  payoutMethod,
+  payoutDestination: v.string(),
+  payoutLegalName: v.string(),
   managerCode: v.string(),
   status: creatorStatus,
   approvedAt: v.union(v.number(), v.null()),
@@ -107,8 +108,9 @@ function mapCreator(row: Doc<"creators">) {
     handle: row.handle,
     followers: row.followers,
     otherHandles: row.otherHandles ?? "",
-    venmoHandle: row.venmoHandle,
-    venmoLegalName: row.venmoLegalName,
+    payoutMethod: row.payoutMethod,
+    payoutDestination: row.payoutDestination,
+    payoutLegalName: row.payoutLegalName,
     managerCode: row.managerCode ?? "",
     status: row.status,
     approvedAt: row.approvedAt ?? null,
@@ -185,8 +187,9 @@ export const listManagers = internalQuery({
       phone: v.string(),
       company: v.string(),
       socialHandle: v.string(),
-      venmoHandle: v.string(),
-      venmoLegalName: v.string(),
+      payoutMethod,
+      payoutDestination: v.string(),
+      payoutLegalName: v.string(),
       estCreators: v.string(),
       source: v.string(),
       enabled: v.boolean(),
@@ -207,8 +210,9 @@ export const listManagers = internalQuery({
       phone: manager.phone ?? "",
       company: manager.company ?? "",
       socialHandle: manager.socialHandle ?? "",
-      venmoHandle: manager.venmoHandle,
-      venmoLegalName: manager.venmoLegalName,
+      payoutMethod: manager.payoutMethod,
+      payoutDestination: manager.payoutDestination,
+      payoutLegalName: manager.payoutLegalName,
       estCreators: manager.estCreators,
       source: manager.source ?? "",
       enabled: manager.enabled,
@@ -485,8 +489,9 @@ export const updateCreator = internalMutation({
     fullName: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
     gowishEmail: v.optional(v.string()),
-    venmoHandle: v.optional(v.string()),
-    venmoLegalName: v.optional(v.string()),
+    payoutMethod: v.optional(payoutMethod),
+    payoutDestination: v.optional(v.string()),
+    payoutLegalName: v.optional(v.string()),
     notes: v.optional(v.string()),
     reason: v.optional(v.string()),
   },
@@ -529,28 +534,34 @@ export const updateCreator = internalMutation({
         fields.push("gowishEmail");
       }
     }
-    if (args.venmoHandle !== undefined || args.venmoLegalName !== undefined) {
-      const venmoHandle = args.venmoHandle === undefined
-        ? creator.venmoHandle
-        : normalizeHandle(args.venmoHandle, "Venmo handle");
-      const venmoLegalName = args.venmoLegalName === undefined
-        ? creator.venmoLegalName
-        : required(args.venmoLegalName, 120, "Venmo legal name");
-      const venmoChanged = venmoHandle !== creator.venmoHandle || venmoLegalName !== creator.venmoLegalName;
-      if (venmoChanged && creator.creatorPaidAt) {
-        throw businessError("Venmo details cannot be changed after the creator payout is marked paid.");
+    if (
+      args.payoutMethod !== undefined ||
+      args.payoutDestination !== undefined ||
+      args.payoutLegalName !== undefined
+    ) {
+      const payout = normalizePayout(
+        args.payoutMethod ?? creator.payoutMethod,
+        args.payoutDestination ?? creator.payoutDestination,
+        args.payoutLegalName ?? creator.payoutLegalName,
+      );
+      const payoutChanged =
+        payout.payoutMethod !== creator.payoutMethod ||
+        payout.payoutDestination !== creator.payoutDestination ||
+        payout.payoutLegalName !== creator.payoutLegalName;
+      if (payoutChanged && creator.creatorPaidAt) {
+        throw businessError("Payout details cannot be changed after the creator payout is marked paid.");
       }
-      if (args.venmoHandle !== undefined) {
-        if (venmoHandle !== creator.venmoHandle) {
-          patch.venmoHandle = venmoHandle;
-          fields.push("venmoHandle");
-        }
+      if (payout.payoutMethod !== creator.payoutMethod) {
+        patch.payoutMethod = payout.payoutMethod;
+        fields.push("payoutMethod");
       }
-      if (args.venmoLegalName !== undefined) {
-        if (venmoLegalName !== creator.venmoLegalName) {
-          patch.venmoLegalName = venmoLegalName;
-          fields.push("venmoLegalName");
-        }
+      if (payout.payoutDestination !== creator.payoutDestination) {
+        patch.payoutDestination = payout.payoutDestination;
+        fields.push("payoutDestination");
+      }
+      if (payout.payoutLegalName !== creator.payoutLegalName) {
+        patch.payoutLegalName = payout.payoutLegalName;
+        fields.push("payoutLegalName");
       }
     }
     if (args.notes !== undefined) {

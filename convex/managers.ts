@@ -2,11 +2,13 @@ import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { recordAudit } from "./audit";
 import { limitRegistration, limitValidation } from "./rateLimits";
+import { payoutMethod } from "./schema";
 import {
   clean,
   normalizeCode,
   normalizeEmail,
   normalizeHandle,
+  normalizePayout,
   optional,
   requireConsent,
   required,
@@ -28,8 +30,9 @@ export const register = internalMutation({
     phone: v.optional(v.string()),
     company: v.optional(v.string()),
     socialHandle: v.optional(v.string()),
-    venmoHandle: v.string(),
-    venmoLegalName: v.string(),
+    payoutMethod,
+    payoutDestination: v.string(),
+    payoutLegalName: v.string(),
     estCreators: v.string(),
     source: v.optional(v.string()),
     consentAccepted: v.boolean(),
@@ -86,6 +89,7 @@ export const register = internalMutation({
     }
 
     const fullName = required(args.fullName, 120, "Name");
+    const payout = normalizePayout(args.payoutMethod, args.payoutDestination, args.payoutLegalName);
     const managerId = await ctx.db.insert("managers", {
       code,
       fullName,
@@ -93,8 +97,7 @@ export const register = internalMutation({
       phone: optional(args.phone, 40, "Phone"),
       company: optional(args.company, 120, "Company"),
       socialHandle: optional(args.socialHandle, 200, "Social handle"),
-      venmoHandle: normalizeHandle(args.venmoHandle, "Venmo handle"),
-      venmoLegalName: required(args.venmoLegalName, 120, "Venmo legal name"),
+      ...payout,
       estCreators: required(args.estCreators, 40, "Estimated creators"),
       source: optional(args.source, 200, "Source"),
       enabled: true,

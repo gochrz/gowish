@@ -112,7 +112,7 @@ dialog::backdrop{background:rgba(15,19,25,.5)}
 .dlghead .sp{margin-left:auto;display:flex;gap:8px}
 .fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fieldgrid label{font-size:12px;color:var(--muted);font-weight:600}
-.fieldgrid input{display:block;width:100%;margin-top:5px}
+.fieldgrid input,.fieldgrid select{display:block;width:100%;margin-top:5px}
 @media(max-width:640px){.fieldgrid{grid-template-columns:1fr}.fieldgrid label{grid-column:1!important}}
 
 .empty{padding:40px;text-align:center;color:var(--faint)}
@@ -177,7 +177,7 @@ dialog::backdrop{background:rgba(15,19,25,.5)}
             <tr>
               <th style="width:34px"><input type="checkbox" id="all"></th>
               <th>Ref</th><th>Name</th><th>Contact email</th><th>GoWish email</th><th>Platform</th>
-              <th class="num">Followers</th><th>Venmo</th><th>Venmo name</th><th>Ref code</th>
+              <th class="num">Followers</th><th>Payout method</th><th>Payout destination</th><th>Payout name</th><th>Ref code</th>
               <th>Attribution</th><th>Status</th><th>Creator paid</th><th>Mgr paid</th><th>Submitted</th>
             </tr>
           </thead>
@@ -193,7 +193,7 @@ dialog::backdrop{background:rgba(15,19,25,.5)}
         <table>
           <thead>
             <tr>
-              <th>Code</th><th>Name</th><th>Email</th><th>Venmo</th><th>Venmo name</th>
+              <th>Code</th><th>Name</th><th>Email</th><th>Payout method</th><th>Payout destination</th><th>Payout name</th>
               <th class="num">Submitted</th><th class="num">Approved</th>
               <th class="num">Owed</th><th class="num">Paid out</th>
             </tr>
@@ -230,8 +230,9 @@ dialog::backdrop{background:rgba(15,19,25,.5)}
     <div class="fieldgrid">
       <label>Contact email<input type="text" id="editContact"></label>
       <label>GoWish email<input type="text" id="editGowish"></label>
-      <label>Venmo handle<input type="text" id="editVenmo"></label>
-      <label>Venmo legal name<input type="text" id="editVenmoName"></label>
+      <label>Payout method<select id="editPayoutMethod"><option value="venmo">Venmo</option><option value="apple_cash">Apple Cash</option></select></label>
+      <label>Payout destination<input type="text" id="editPayoutDestination"></label>
+      <label>Payout name<input type="text" id="editPayoutName"></label>
       <label style="grid-column:1/-1">Notes<input type="text" id="editNotes"></label>
     </div>
     <button class="btn dark" id="editSave" style="margin-top:16px">Save corrections</button>
@@ -247,6 +248,7 @@ const selected = new Set();
 
 const $ = id => document.getElementById(id);
 const money = n => '$' + Number(n || 0).toLocaleString();
+const payoutLabel = method => method === 'apple_cash' ? 'Apple Cash' : 'Venmo';
 
 function msg(id, text){
   const el = $(id);
@@ -354,7 +356,7 @@ function esc(s){
 
 function renderCreators(){
   if(!creators.length){
-    $('cRows').innerHTML = '<tr><td colspan="15" class="empty">Nothing here yet.</td></tr>';
+    $('cRows').innerHTML = '<tr><td colspan="16" class="empty">Nothing here yet.</td></tr>';
     return;
   }
   $('cRows').innerHTML = creators.map(c => `
@@ -366,8 +368,9 @@ function renderCreators(){
       <td class="mono">${esc(c.gowishEmail)}</td>
       <td class="nowrap">${esc(c.platform)} ${esc(c.handle)}</td>
       <td class="num">${esc(c.followers)}</td>
-      <td class="mono nowrap">${esc(c.venmoHandle)}</td>
-      <td class="nowrap">${esc(c.venmoLegalName)}</td>
+      <td class="nowrap">${payoutLabel(c.payoutMethod)}</td>
+      <td class="mono nowrap">${esc(c.payoutDestination)}</td>
+      <td class="nowrap">${esc(c.payoutLegalName)}</td>
       <td class="mono">${esc(c.managerCode) || '<span class="no-">—</span>'}</td>
       <td>${c.attributionSent ? '<span class="yes">Sent</span>' : '<span class="no-">Pending</span>'}</td>
       <td><span class="pill ${c.status}">${c.status}</span></td>
@@ -379,7 +382,7 @@ function renderCreators(){
 
 function renderManagers(){
   if(!managers.length){
-    $('mRows').innerHTML = '<tr><td colspan="9" class="empty">No managers registered yet.</td></tr>';
+    $('mRows').innerHTML = '<tr><td colspan="10" class="empty">No managers registered yet.</td></tr>';
     return;
   }
   $('mRows').innerHTML = managers.map(m => `
@@ -387,8 +390,9 @@ function renderManagers(){
       <td class="mono"><strong>${esc(m.code)}</strong></td>
       <td class="nowrap">${esc(m.fullName)}</td>
       <td class="mono">${esc(m.email)}</td>
-      <td class="mono nowrap">${esc(m.venmoHandle)}</td>
-      <td class="nowrap">${esc(m.venmoLegalName)}</td>
+      <td class="nowrap">${payoutLabel(m.payoutMethod)}</td>
+      <td class="mono nowrap">${esc(m.payoutDestination)}</td>
+      <td class="nowrap">${esc(m.payoutLegalName)}</td>
       <td class="num">${m.submitted}</td>
       <td class="num">${m.approved}</td>
       <td class="num" style="color:var(--amber);font-weight:700">${money(m.owed)}</td>
@@ -511,8 +515,9 @@ $('editBtn').addEventListener('click', () => {
   if(!row) return;
   $('editContact').value = row.contactEmail || '';
   $('editGowish').value = row.gowishEmail || '';
-  $('editVenmo').value = row.venmoHandle || '';
-  $('editVenmoName').value = row.venmoLegalName || '';
+  $('editPayoutMethod').value = row.payoutMethod || 'venmo';
+  $('editPayoutDestination').value = row.payoutDestination || '';
+  $('editPayoutName').value = row.payoutLegalName || '';
   $('editNotes').value = row.notes || '';
   $('editDlg').dataset.id = row.id;
   $('editDlg').showModal();
@@ -528,8 +533,9 @@ $('editSave').addEventListener('click', async () => {
       id,
       contactEmail:$('editContact').value.trim(),
       gowishEmail:$('editGowish').value.trim(),
-      venmoHandle:$('editVenmo').value.trim(),
-      venmoLegalName:$('editVenmoName').value.trim(),
+      payoutMethod:$('editPayoutMethod').value,
+      payoutDestination:$('editPayoutDestination').value.trim(),
+      payoutLegalName:$('editPayoutName').value.trim(),
       notes:$('editNotes').value.trim()
     });
     $('editDlg').close();

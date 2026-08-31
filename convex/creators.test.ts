@@ -18,8 +18,9 @@ const managerRegistration = {
   phone: "+1 555 111 2222",
   company: "North Studio",
   socialHandle: "@morgan",
-  venmoHandle: "@morgan-pay",
-  venmoLegalName: "Morgan Reed",
+  payoutMethod: "venmo" as const,
+  payoutDestination: "@morgan-pay",
+  payoutLegalName: "Morgan Reed",
   estCreators: "6 to 20",
   source: "UGC roster",
   consentAccepted: true,
@@ -40,8 +41,9 @@ const creatorSubmission = {
   handle: " @@caseycreates ",
   followers: "42000",
   otherHandles: "TikTok @casey",
-  venmoHandle: " @@casey-pay ",
-  venmoLegalName: " Casey Lane ",
+  payoutMethod: "venmo" as const,
+  payoutDestination: " @@casey-pay ",
+  payoutLegalName: " Casey Lane ",
   managerCode: undefined,
   consentAccepted: true,
   consentVersion: "creator-2026-08-31",
@@ -74,7 +76,9 @@ describe("creator submission", () => {
       gowishEmail: "casey.gowish@example.com",
       country: "United States",
       handle: "@caseycreates",
-      venmoHandle: "@casey-pay",
+      payoutMethod: "venmo",
+      payoutDestination: "@casey-pay",
+      payoutLegalName: "Casey Lane",
       status: "submitted",
       attributionState: "pending",
       creatorBonusAmount: 20,
@@ -201,10 +205,41 @@ describe("creator submission", () => {
     await expect(
       t.mutation(internal.creators.submit, {
         ...creatorSubmission,
-        venmoHandle: "not a valid handle",
+        payoutDestination: "not a valid handle",
         rateLimitKey: "creator-venmo-test-client",
       }),
     ).rejects.toThrow("Venmo handle is invalid");
+  });
+
+  test.each([
+    [" email ", " Creator.Payments@Example.COM ", "creator.payments@example.com"],
+    [" phone ", " +1 (555) 333-4444 ", "+15553334444"],
+  ])("stores a normalized Apple Cash%scontact", async (_label, destination, normalized) => {
+    const t = setup();
+    await t.mutation(internal.creators.submit, {
+      ...creatorSubmission,
+      payoutMethod: "apple_cash",
+      payoutDestination: destination,
+    });
+
+    const creators = await t.run((ctx) => ctx.db.query("creators").collect());
+    expect(creators[0]).toMatchObject({
+      payoutMethod: "apple_cash",
+      payoutDestination: normalized,
+      payoutLegalName: "Casey Lane",
+    });
+  });
+
+  test("rejects an Apple Cash contact that is neither an email nor a phone number", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        payoutMethod: "apple_cash",
+        payoutDestination: "casey cash",
+      }),
+    ).rejects.toThrow("Apple Cash phone number or email is invalid");
   });
 
   test("allocates unique creator references", async () => {

@@ -20,6 +20,11 @@ export const platform = v.union(
   v.literal("Other"),
 );
 
+export const payoutMethod = v.union(
+  v.literal("venmo"),
+  v.literal("apple_cash"),
+);
+
 export default defineSchema({
   managers: defineTable({
     code: v.string(),
@@ -28,8 +33,9 @@ export default defineSchema({
     phone: v.optional(v.string()),
     company: v.optional(v.string()),
     socialHandle: v.optional(v.string()),
-    venmoHandle: v.string(),
-    venmoLegalName: v.string(),
+    payoutMethod,
+    payoutDestination: v.string(),
+    payoutLegalName: v.string(),
     estCreators: v.string(),
     source: v.optional(v.string()),
     enabled: v.boolean(),
@@ -60,8 +66,9 @@ export default defineSchema({
     handle: v.string(),
     followers: v.string(),
     otherHandles: v.optional(v.string()),
-    venmoHandle: v.string(),
-    venmoLegalName: v.string(),
+    payoutMethod,
+    payoutDestination: v.string(),
+    payoutLegalName: v.string(),
     managerCode: v.optional(v.string()),
     managerId: v.optional(v.id("managers")),
     status: creatorStatus,

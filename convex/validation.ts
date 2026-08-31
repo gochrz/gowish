@@ -36,6 +36,41 @@ export function normalizeHandle(value: string, field: string) {
   return `@${normalized}`;
 }
 
+export type PayoutMethod = "venmo" | "apple_cash";
+
+export function normalizePayout(method: PayoutMethod, destination: string, legalName: string) {
+  const payoutLegalName = required(legalName, 120, "Payout name");
+  if (method === "venmo") {
+    return {
+      payoutMethod: method,
+      payoutDestination: normalizeHandle(destination, "Venmo handle"),
+      payoutLegalName,
+    };
+  }
+
+  const contact = required(destination, 254, "Apple Cash phone number or email");
+  if (contact.includes("@")) {
+    try {
+      return {
+        payoutMethod: method,
+        payoutDestination: normalizeEmail(contact, "Apple Cash phone number or email"),
+        payoutLegalName,
+      };
+    } catch {
+      throw validationError("Apple Cash phone number or email is invalid.");
+    }
+  }
+
+  const digits = contact.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return { payoutMethod: method, payoutDestination: `+1${digits}`, payoutLegalName };
+  }
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return { payoutMethod: method, payoutDestination: `+${digits}`, payoutLegalName };
+  }
+  throw validationError("Apple Cash phone number or email is invalid.");
+}
+
 export function optional(value: string | undefined, maxLength: number, field: string) {
   const normalized = clean(value, maxLength, field);
   return normalized || undefined;

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GoWish Creator Program</title>
-<meta name="description" content="Get paid to join the GoWish Creator Universe. $20 paid by Venmo after GoWish approves you.">
+<meta name="description" content="Get paid to join the GoWish Creator Universe. $20 paid through your preferred payout method after GoWish approves you.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -297,6 +297,12 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 
 .check{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer}
 .check input{margin:3px 0 0;width:17px;height:17px;flex:none;accent-color:var(--blue)}
+.payout-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:7px}
+.payout-option{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.payout-option:has(input:checked){border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.payout-option input{width:17px;height:17px;margin:0;accent-color:var(--blue)}
+.prefix.plain .tag{display:none}
+.prefix.plain input{border-radius:8px}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:9px;
@@ -424,7 +430,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
   <div class="hero">
     <div class="eyebrow" style="margin-bottom:14px">Paid sign-up bonus</div>
     <h1>Get paid $<span class="v-creator">20</span> to join the GoWish Creator Program.</h1>
-    <p class="lede">GoWish pays us to bring creators into their Creator Universe. We pass a chunk of it straight to you. Join, get approved, get a Venmo.</p>
+    <p class="lede">GoWish pays us to bring creators into their Creator Universe. We pass a chunk of it straight to you. Join, get approved, get paid.</p>
   </div>
 
   <div class="ledger">
@@ -514,19 +520,27 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
           <input type="text" id="c-other" name="otherHandles" placeholder="TikTok @you, YouTube @you">
         </div>
 
+        <div class="field">
+          <label>Preferred payout method</label>
+          <div class="payout-options" role="radiogroup" aria-label="Preferred payout method">
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="venmo" checked><span>Venmo</span></label>
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="apple_cash"><span>Apple Cash</span></label>
+          </div>
+        </div>
+
         <div class="field split">
           <div>
-            <label for="c-venmo">Your Venmo handle</label>
-            <div class="hint" style="margin-top:0">Where we send your $<span class="v-creator">20</span>.</div>
-            <div class="prefix">
+            <label for="c-payout" data-payout-label>Your Venmo handle</label>
+            <div class="hint" style="margin-top:0" data-payout-hint>Where we send your $<span class="v-creator">20</span>.</div>
+            <div class="prefix" data-payout-prefix>
               <span class="tag">@</span>
-              <input type="text" id="c-venmo" name="venmoHandle" autocapitalize="none" spellcheck="false">
+              <input type="text" id="c-payout" name="payoutDestination" autocapitalize="none" spellcheck="false">
             </div>
           </div>
           <div>
-            <label for="c-venmoname">Name on that Venmo</label>
+            <label for="c-payoutname">Name on that account</label>
             <div class="hint" style="margin-top:0">So we know we sent it to the right person.</div>
-            <input type="text" id="c-venmoname" name="venmoLegalName">
+            <input type="text" id="c-payoutname" name="payoutLegalName" autocomplete="name">
           </div>
         </div>
 
@@ -568,7 +582,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <div class="sec-head"><div class="eyebrow">Background</div><h2>When you actually get paid</h2></div>
     <div class="block">
       <p class="small">GoWish pays us for creators they approve. We pay you out of that. <span class="pay-cycle-creator"></span></p>
-      <p class="small">So the sequence is: you get approved, GoWish counts you in their next settlement, that money reaches us, we send your $<span class="v-creator">20</span> to your Venmo. We are not sitting on it, we just cannot send money we have not received yet.</p>
+      <p class="small">So the sequence is: you get approved, GoWish counts you in their next settlement, that money reaches us, and we send your $<span class="v-creator">20</span> through your preferred payout method. We are not sitting on it, we just cannot send money we have not received yet.</p>
       <p class="small">Approval is GoWish's call, not ours, and we pay on approved accounts only. If your approval is confirmed and a cycle passes without payment, keep your reference available so the payment can be reviewed.</p>
     </div>
   </section>
@@ -582,7 +596,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
   <div class="block done">
     <div class="mark">&#10003;</div>
     <h2 style="margin-bottom:10px">You're in.</h2>
-    <p class="small" style="max-width:46ch;margin:0 auto 18px">We have your details. Reference <b id="cRef" class="mono-in"></b>. We confirm your approval with GoWish, and once GoWish settles that batch with us we send $<span class="v-creator">20</span> to your Venmo.</p>
+    <p class="small" style="max-width:46ch;margin:0 auto 18px">We have your details. Reference <b id="cRef" class="mono-in"></b>. We confirm your approval with GoWish, and once GoWish settles that batch with us we send $<span class="v-creator">20</span> through your preferred payout method.</p>
     <p class="tiny" style="max-width:46ch;margin:0 auto"><span class="pay-cycle-creator"></span></p>
   </div>
 
@@ -606,7 +620,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 
   <div class="ledger">
     <div class="ledger-row">
-      <div class="who"><b>You get</b><span>Per approved creator, paid to your Venmo</span></div>
+      <div class="who"><b>You get</b><span>Per approved creator, sent through your preferred payout method</span></div>
       <div class="amt pos">$<span class="v-manager">10</span></div>
     </div>
     <div class="ledger-row">
@@ -628,7 +642,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <div class="block">
       <ol class="steps">
         <li>
-          <div><h3>Register below</h3><p>Name, email, Venmo. Takes a minute. We issue your code immediately on screen.</p></div>
+          <div><h3>Register below</h3><p>Name, email, payout details. Takes a minute. We issue your code immediately on screen.</p></div>
         </li>
         <li>
           <div><h3>Send your creators your link</h3><p>Your code is baked into a link we give you, so your creators do not have to type anything. The link goes to the public creator page, not to this one.</p></div>
@@ -637,7 +651,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
           <div><h3>They sign up on GoWish and get approved</h3><p>They download GoWish, apply to the Creator Program, connect socials and finish their profile. GoWish approves inside 24 to 72 hours in most cases. Approval is GoWish's decision, not ours.</p></div>
         </li>
         <li>
-          <div><h3>You get paid</h3><p>We confirm approvals with GoWish, then send you $<span class="v-manager">10</span> per approved creator, straight to Venmo.</p></div>
+          <div><h3>You get paid</h3><p>We confirm approvals with GoWish, then send you $<span class="v-manager">10</span> per approved creator through your preferred payout method.</p></div>
         </li>
       </ol>
     </div>
@@ -679,19 +693,27 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
           <input type="text" id="m-social" name="socialHandle" placeholder="@you or a link">
         </div>
 
+        <div class="field">
+          <label>Preferred payout method</label>
+          <div class="payout-options" role="radiogroup" aria-label="Preferred payout method">
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="venmo" checked><span>Venmo</span></label>
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="apple_cash"><span>Apple Cash</span></label>
+          </div>
+        </div>
+
         <div class="field split">
           <div>
-            <label for="m-venmo">Your Venmo handle</label>
-            <div class="hint" style="margin-top:0">Where we send your payouts.</div>
-            <div class="prefix">
+            <label for="m-payout" data-payout-label>Your Venmo handle</label>
+            <div class="hint" style="margin-top:0" data-payout-hint>Where we send your payouts.</div>
+            <div class="prefix" data-payout-prefix>
               <span class="tag">@</span>
-              <input type="text" id="m-venmo" name="venmoHandle" autocapitalize="none" spellcheck="false">
+              <input type="text" id="m-payout" name="payoutDestination" autocapitalize="none" spellcheck="false">
             </div>
           </div>
           <div>
-            <label for="m-venmoname">Name on that Venmo</label>
+            <label for="m-payoutname">Name on that account</label>
             <div class="hint" style="margin-top:0">So we know we sent it to the right person.</div>
-            <input type="text" id="m-venmoname" name="venmoLegalName">
+            <input type="text" id="m-payoutname" name="payoutLegalName" autocomplete="name">
           </div>
         </div>
 
@@ -843,6 +865,10 @@ async function api(payload){
 function collect(form){
   const out = {};
   form.querySelectorAll('input[name], select[name], textarea[name]').forEach(el=>{
+    if(el.type === 'radio'){
+      if(el.checked) out[el.name] = el.value;
+      return;
+    }
     out[el.name] = el.value.trim();
   });
   return out;
@@ -851,13 +877,29 @@ function collect(form){
 function needed(form, names){
   let bad = null;
   names.forEach(n=>{
-    const el = form.querySelector('[name="'+n+'"]');
+    const fields = [...form.querySelectorAll('[name="'+n+'"]')];
+    const el = fields.find(field=>field.type !== 'radio' || field.checked) || fields[0];
     if(!el) return;
-    const empty = !el.value.trim();
-    el.classList.toggle('err', empty);
+    const empty = el.type === 'radio' ? !fields.some(field=>field.checked) : !el.value.trim();
+    fields.forEach(field=>field.classList.toggle('err', empty));
     if(empty && !bad) bad = el;
   });
   return bad;
+}
+
+function syncPayoutFields(form, clearDestination){
+  const method = form.querySelector('[name="payoutMethod"]:checked').value;
+  const destination = form.querySelector('[name="payoutDestination"]');
+  const label = form.querySelector('[data-payout-label]');
+  const hint = form.querySelector('[data-payout-hint]');
+  const prefix = form.querySelector('[data-payout-prefix]');
+  if(clearDestination) destination.value = '';
+  const appleCash = method === 'apple_cash';
+  label.textContent = appleCash ? 'Apple Cash phone number or email' : 'Your Venmo handle';
+  hint.textContent = appleCash ? 'Use the phone number or email associated with Apple Cash.' : 'Where we send your payout.';
+  prefix.classList.toggle('plain', appleCash);
+  destination.placeholder = appleCash ? 'Phone number or email' : '';
+  destination.inputMode = appleCash ? 'text' : 'text';
 }
 
 function fail(boxId, msg){
@@ -911,6 +953,8 @@ function boot(){
     checkCode();
   }
 
+  document.querySelectorAll('#creatorForm, #managerForm').forEach(form=>syncPayoutFields(form, false));
+
   go(location.hash === '#manager' ? 'manager' : 'main');
 }
 
@@ -949,7 +993,7 @@ document.getElementById('creatorForm').addEventListener('submit', async e=>{
   const label = 'Submit and claim my $' + CONFIG.CREATOR_BONUS;
 
   const bad = needed(form, ['fullName','contactEmail','gowishEmail','country',
-                            'platform','handle','followers','venmoHandle','venmoLegalName']);
+                            'platform','handle','followers','payoutMethod','payoutDestination','payoutLegalName']);
   if(bad){ fail('cErr','Fill in the highlighted fields.'); bad.focus(); return; }
   if(!document.getElementById('c-agree').checked){
     fail('cErr','Tick the box to confirm you have created your GoWish account.'); return;
@@ -979,7 +1023,7 @@ document.getElementById('managerForm').addEventListener('submit', async e=>{
   const form = e.target;
   const btn = document.getElementById('mBtn');
 
-  const bad = needed(form, ['fullName','email','venmoHandle','venmoLegalName','estCreators']);
+  const bad = needed(form, ['fullName','email','payoutMethod','payoutDestination','payoutLegalName','estCreators']);
   if(bad){ fail('mErr','Fill in the highlighted fields.'); bad.focus(); return; }
   if(!document.getElementById('m-agree').checked){
     fail('mErr','Tick the box to confirm you understand how payment works.'); return;
@@ -1004,6 +1048,10 @@ document.getElementById('managerForm').addEventListener('submit', async e=>{
   }finally{
     busy(btn, false, 'Register and get my code');
   }
+});
+
+document.querySelectorAll('input[name="payoutMethod"]').forEach(input=>{
+  input.addEventListener('change', ()=>syncPayoutFields(input.form, true));
 });
 
 document.getElementById('mCopy').addEventListener('click', async ()=>{

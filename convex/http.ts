@@ -140,6 +140,17 @@ function platformValue(body: Record<string, unknown>) {
   throw new HttpError(400, "Invalid platform.");
 }
 
+function payoutMethodValue(body: Record<string, unknown>) {
+  const value = body.payoutMethod;
+  if (value === "venmo" || value === "apple_cash") return value;
+  throw new HttpError(400, "Invalid payout method.");
+}
+
+function optionalPayoutMethod(body: Record<string, unknown>) {
+  if (body.payoutMethod === undefined || body.payoutMethod === "") return undefined;
+  return payoutMethodValue(body);
+}
+
 function constantTimeEqual(left: string, right: string) {
   const length = Math.max(left.length, right.length);
   let difference = left.length ^ right.length;
@@ -239,8 +250,9 @@ http.route({
           phone: optionalString(body, "phone"),
           company: optionalString(body, "company"),
           socialHandle: optionalString(body, "socialHandle"),
-          venmoHandle: stringValue(body, "venmoHandle"),
-          venmoLegalName: stringValue(body, "venmoLegalName"),
+          payoutMethod: payoutMethodValue(body),
+          payoutDestination: stringValue(body, "payoutDestination"),
+          payoutLegalName: stringValue(body, "payoutLegalName"),
           estCreators: stringValue(body, "estCreators"),
           source: optionalString(body, "source"),
           consentAccepted: booleanValue(body, "consentAccepted"),
@@ -270,8 +282,9 @@ http.route({
           handle: stringValue(body, "handle"),
           followers: stringValue(body, "followers"),
           otherHandles: optionalString(body, "otherHandles"),
-          venmoHandle: stringValue(body, "venmoHandle"),
-          venmoLegalName: stringValue(body, "venmoLegalName"),
+          payoutMethod: payoutMethodValue(body),
+          payoutDestination: stringValue(body, "payoutDestination"),
+          payoutLegalName: stringValue(body, "payoutLegalName"),
           managerCode: optionalString(body, "refCode") ?? optionalString(body, "managerCode"),
           consentAccepted: booleanValue(body, "consentAccepted"),
           consentVersion: stringValue(body, "consentVersion"),
@@ -354,8 +367,9 @@ http.route({
           fullName: optionalString(body, "fullName"),
           contactEmail: optionalString(body, "contactEmail"),
           gowishEmail: optionalString(body, "gowishEmail"),
-          venmoHandle: optionalString(body, "venmoHandle"),
-          venmoLegalName: optionalString(body, "venmoLegalName"),
+          payoutMethod: optionalPayoutMethod(body),
+          payoutDestination: optionalString(body, "payoutDestination"),
+          payoutLegalName: optionalString(body, "payoutLegalName"),
           notes: optionalString(body, "notes"),
           reason: optionalString(body, "reason"),
         });

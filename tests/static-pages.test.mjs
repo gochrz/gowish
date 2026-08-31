@@ -51,6 +51,16 @@ test("public copy does not promise Venmo as the only payout method", async () =>
   assert.match(html, /preferred payout method/i);
 });
 
+test("public copy omits the two-to-four-week estimate", async () => {
+  const html = await readPage("index.html");
+  assert.doesNotMatch(html, /two to four weeks from approval/i);
+});
+
+test("public copy omits the no-fronting-money paragraph", async () => {
+  const html = await readPage("index.html");
+  assert.doesNotMatch(html, /We do not front the money/i);
+});
+
 test("admin page targets the development admin endpoint", async () => {
   const html = await readPage("admin.html");
   assert.match(html, /https:\/\/tough-spaniel-606\.convex\.site\/admin/);

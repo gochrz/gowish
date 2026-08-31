@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GoWish Creator Program</title>
 <meta name="description" content="Get paid to join the GoWish Creator Universe. $20 paid through your preferred payout method after GoWish approves you.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GoWish Creator Program">
+<meta property="og:description" content="Get paid to join the GoWish Creator Universe. $20 paid through your preferred payout method after GoWish approves you.">
+<meta property="og:url" content="https://www.gowishpartner.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GoWish Creator Program">
+<meta name="twitter:description" content="Get paid to join the GoWish Creator Universe. $20 paid through your preferred payout method after GoWish approves you.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -834,9 +841,11 @@ function hostedPage(){
 function setUrl(name){
   if(!hostedPage()) return;
   try{
-    history.replaceState(null, '', name === 'main'
-      ? location.pathname + location.search
-      : '#' + name);
+    const next = name === 'main'
+      ? '/' + location.search
+      : name === 'manager' ? '/manager' + location.search
+      : location.pathname + location.search + '#' + name;
+    history.replaceState(null, '', next);
   }catch(e){
     console.warn('[url] replaceState unavailable here, carrying on.', e.message);
   }

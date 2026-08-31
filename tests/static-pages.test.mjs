@@ -3,10 +3,35 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const readPage = (name) => readFile(new URL(`../vercel-site/${name}`, import.meta.url), "utf8");
+const readOptionalPage = (name) => readPage(name).catch(() => "");
 
 test("public page targets the development HTTP endpoint", async () => {
   const html = await readPage("index.html");
   assert.match(html, /https:\/\/tough-spaniel-606\.convex\.site\/api/);
+});
+
+test("creator entry point exposes creator-specific social metadata", async () => {
+  const html = await readPage("index.html");
+  assert.match(html, /<meta property="og:title" content="GoWish Creator Program">/);
+  assert.match(html, /<meta property="og:description" content="[^"]*\$20[^"]*">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/www\.gowishpartner\.com\/">/);
+});
+
+test("manager entry point exposes the $10 referral preview", async () => {
+  const html = await readOptionalPage("manager/index.html");
+  assert.match(html, /<title>GoWish Creator Referral Program<\/title>/);
+  assert.match(html, /<meta property="og:title" content="GoWish Creator Referral Program">/);
+  assert.match(html, /<meta property="og:description" content="Earn \$10 for every creator you refer who joins GoWish and gets approved\. Register once to get your referral code\.">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/www\.gowishpartner\.com\/manager">/);
+  assert.doesNotMatch(html, /\$20/);
+});
+
+test("manager entry point opens and preserves the clean manager URL", async () => {
+  const manager = await readOptionalPage("manager/index.html");
+  const main = await readPage("index.html");
+  assert.match(manager, /location\.replace\('\/' \+ location\.search \+ '#manager'\)/);
+  assert.match(main, /name === 'manager'\s*\? '\/manager' \+ location\.search/);
+  assert.match(main, /location\.hash === '#manager'/);
 });
 
 test("manager share links use the public GoWish partner domain", async () => {

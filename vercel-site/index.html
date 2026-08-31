@@ -219,6 +219,17 @@ section{margin-top:34px}
 }
 .steps li h3{margin-bottom:3px}
 .steps li p{font-size:14.5px;color:var(--muted);margin:0}
+.store-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.store-link{
+  display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  padding:10px 16px;border:1px solid var(--ink);border-radius:8px;
+  background:var(--ink);color:#fff;text-decoration:none;font-size:14px;font-weight:600;
+  transition:transform .12s,box-shadow .12s;
+}
+.store-link:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(15,19,25,.14)}
+.store-link:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.store-links + .small{margin-top:16px}
+@media(max-width:480px){.store-link{width:100%}}
 
 /* ============================================================
    CALLOUTS
@@ -444,6 +455,10 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <div class="sec-head"><div class="eyebrow">Step one</div><h2>Join GoWish</h2></div>
     <div class="block">
       <ol class="steps" id="creator-steps"></ol>
+      <div class="store-links" aria-label="Download GoWish">
+        <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+        <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
+      </div>
     </div>
   </section>
 
@@ -601,12 +616,16 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
   </div>
 
   <div class="note warn">
-    <b>One thing left.</b> If your GoWish profile is not finished, do it now. Profile photo, cover image, and one list with at least one product. GoWish will not approve an empty profile, and we can only pay on approved accounts.
+    <b>Finish your GoWish profile.</b> Add a profile photo, a cover image, and one list with at least one product. GoWish will not approve an empty profile, and we can only pay on approved accounts.
   </div>
 
   <div class="block">
-    <h3 style="margin-bottom:10px">While you wait</h3>
-    <p class="small">Share your GoWish link once on your stories or in your bio. That is how the commission side starts working, and it is separate money from the bonus.</p>
+    <h3 style="margin-bottom:10px">Open GoWish</h3>
+    <p class="small">Download or open the GoWish app to finish your profile and track your approval.</p>
+    <div class="store-links" aria-label="Download GoWish">
+      <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+      <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer">Get it on Google Play</a>
+    </div>
     <p class="small">If anything about your submission was wrong, keep your reference and contact the partner or manager who sent you this page before payment goes out.</p>
   </div>
 </div>

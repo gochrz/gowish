@@ -61,6 +61,23 @@ test("public copy omits the no-fronting-money paragraph", async () => {
   assert.doesNotMatch(html, /We do not front the money/i);
 });
 
+test("public page links directly to both app stores before and after submission", async () => {
+  const html = await readPage("index.html");
+  const appStore = "https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923";
+  const googlePlay = "https://play.google.com/store/apps/details?id=com.gowish.app&hl=en";
+  assert.ok(html.split(appStore).length - 1 >= 2);
+  assert.ok(html.split(googlePlay).length - 1 >= 2);
+});
+
+test("creator confirmation gives actionable app steps without email or story instructions", async () => {
+  const html = await readPage("index.html");
+  const confirmation = html.match(/<div class="view" id="v-done">([\s\S]*?)<div class="view" id="v-manager">/)?.[1] ?? "";
+  assert.match(confirmation, /Finish your GoWish profile/i);
+  assert.match(confirmation, /App Store/i);
+  assert.match(confirmation, /Google Play/i);
+  assert.doesNotMatch(confirmation, /check your email|stor(?:y|ies)|bio/i);
+});
+
 test("admin page targets the development admin endpoint", async () => {
   const html = await readPage("admin.html");
   assert.match(html, /https:\/\/tough-spaniel-606\.convex\.site\/admin/);

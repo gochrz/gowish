@@ -165,15 +165,36 @@ describe("creator submission", () => {
     ).rejects.toThrow("referral code was not recognized");
   });
 
-  test("enforces United States eligibility and explicit consent", async () => {
+  test.each(["Canada", "United Kingdom", "France", "Türkiye", "Kosovo"])(
+    "accepts an eligible creator in %s using PayPal",
+    async (country) => {
+      const t = setup();
+      await t.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        country,
+        gowishEmail: `${country.toLowerCase().replace(/[^a-z]+/g, "-")}@gowish.example.com`,
+        payoutMethod: "paypal",
+        payoutDestination: " Creator.Payments@Example.COM ",
+      });
+
+      const creators = await t.run((ctx) => ctx.db.query("creators").collect());
+      expect(creators[0]).toMatchObject({
+        country,
+        payoutMethod: "paypal",
+        payoutDestination: "creator.payments@example.com",
+      });
+    },
+  );
+
+  test("rejects countries outside the approved geography and requires explicit consent", async () => {
     const t = setup();
 
     await expect(
       t.mutation(internal.creators.submit, {
         ...creatorSubmission,
-        country: "Other",
+        country: "Brazil",
       }),
-    ).rejects.toThrow("United States only");
+    ).rejects.toThrow("United States, Canada, and Europe");
 
     await expect(
       t.mutation(internal.creators.submit, {
@@ -209,6 +230,63 @@ describe("creator submission", () => {
         rateLimitKey: "creator-venmo-test-client",
       }),
     ).rejects.toThrow("Venmo handle is invalid");
+  });
+
+  test("accepts 149,999 followers and rejects 150,000", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        followers: "149,999",
+      }),
+    ).resolves.toMatchObject({ ok: true });
+
+    await expect(
+      t.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        contactEmail: "limit@example.com",
+        gowishEmail: "limit@gowish.example.com",
+        followers: "150000",
+        rateLimitKey: "creator-followers-limit-client",
+      }),
+    ).rejects.toThrow("fewer than 150,000 followers");
+  });
+
+  test("requires PayPal outside the United States", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        country: "United Kingdom",
+      }),
+    ).rejects.toThrow("PayPal is required outside the United States");
+  });
+
+  test("stores a normalized PayPal email and rejects invalid PayPal details", async () => {
+    const t = setup();
+    await t.mutation(internal.creators.submit, {
+      ...creatorSubmission,
+      payoutMethod: "paypal",
+      payoutDestination: " Creator.Payments@Example.COM ",
+    });
+
+    const creators = await t.run((ctx) => ctx.db.query("creators").collect());
+    expect(creators[0]).toMatchObject({
+      payoutMethod: "paypal",
+      payoutDestination: "creator.payments@example.com",
+      payoutLegalName: "Casey Lane",
+    });
+
+    const invalid = setup();
+    await expect(
+      invalid.mutation(internal.creators.submit, {
+        ...creatorSubmission,
+        payoutMethod: "paypal",
+        payoutDestination: "not-an-email",
+      }),
+    ).rejects.toThrow("PayPal email does not look right");
   });
 
   test.each([

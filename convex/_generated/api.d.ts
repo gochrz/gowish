@@ -11,6 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as audit from "../audit.js";
 import type * as creators from "../creators.js";
+import type * as eligibility from "../eligibility.js";
 import type * as http from "../http.js";
 import type * as managers from "../managers.js";
 import type * as rateLimits from "../rateLimits.js";
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   audit: typeof audit;
   creators: typeof creators;
+  eligibility: typeof eligibility;
   http: typeof http;
   managers: typeof managers;
   rateLimits: typeof rateLimits;

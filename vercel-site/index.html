@@ -228,6 +228,18 @@ section{margin-top:34px}
 .steps li h3{margin-bottom:3px}
 .steps li p{font-size:14.5px;color:var(--muted);margin:0}
 .store-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.app-identity{
+  display:flex;align-items:center;gap:13px;margin-top:18px;padding:12px 14px;
+  border:1px solid var(--line);border-radius:10px;background:#F8F9FB;
+  color:var(--ink);text-decoration:none;transition:border-color .12s,transform .12s;
+}
+.app-identity img{width:50px;height:50px;border-radius:12px;display:block;flex:none}
+.app-identity-copy{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.app-identity-copy strong{font-size:15px}
+.app-identity-copy span{font-size:12.5px;color:var(--muted)}
+.app-identity-arrow{margin-left:auto;color:var(--blue);font-size:18px}
+.app-identity:hover{border-color:var(--blue);transform:translateY(-1px)}
+.app-identity:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .store-link{
   display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;
   padding:10px 16px;border:1px solid var(--ink);border-radius:8px;
@@ -317,12 +329,14 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 
 .check{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.5;cursor:pointer}
 .check input{margin:3px 0 0;width:17px;height:17px;flex:none;accent-color:var(--blue)}
-.payout-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:7px}
+.payout-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:7px}
 .payout-option{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:0;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
 .payout-option:has(input:checked){border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
 .payout-option input{width:17px;height:17px;margin:0;accent-color:var(--blue)}
+.payout-option[hidden]{display:none}
 .prefix.plain .tag{display:none}
 .prefix.plain input{border-radius:8px}
+@media(max-width:560px){.payout-options{grid-template-columns:1fr}}
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:9px;
@@ -465,6 +479,11 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
     <p class="step-intro">Complete the steps below to qualify for your $<span class="v-creator">20</span> bonus. And the opportunity doesn’t stop there—once your account is active, you can continue earning commissions when people shop through your GoWish lists.</p>
     <div class="block">
       <ol class="steps" id="creator-steps"></ol>
+      <a class="app-identity" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">
+        <img src="assets/gowish-app-icon.jpg" alt="GoWish app icon" width="50" height="50">
+        <span class="app-identity-copy"><strong>GoWish</strong><span>Official app on the App Store</span></span>
+        <span class="app-identity-arrow" aria-hidden="true">&nearr;</span>
+      </a>
       <div class="store-links" aria-label="Download GoWish">
         <a class="store-link" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-apple" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.32.03-1.75-.79-3.27-.79-1.53 0-2.01.77-3.26.82-1.3.05-2.29-1.33-3.13-2.57C4.25 16.9 2.9 12.28 4.7 9.15a4.88 4.88 0 0 1 4.14-2.51c1.29-.03 2.51.87 3.29.87.76 0 2.19-1.08 3.7-.92.63.03 2.39.25 3.52 1.91-.09.06-2.1 1.22-2.08 3.74.03 3.01 2.64 4.02 2.67 4.03-.03.07-.42 1.44-1.23 2.92M13 3.3a4.31 4.31 0 0 1 2.8-1.44 4.1 4.1 0 0 1-1 2.98 3.58 3.58 0 0 1-2.82 1.33A3.65 3.65 0 0 1 13 3.3z"/></svg><span>Download on the App Store</span></a>
         <a class="store-link" href="https://play.google.com/store/apps/details?id=com.gowish.app&hl=en" target="_blank" rel="noopener noreferrer"><svg class="store-icon store-icon-google-play" aria-hidden="true" viewBox="0 0 24 24"><path fill="#00d5ff" d="M3.3 2.25a1.8 1.8 0 0 0-.3 1v17.5c0 .37.11.72.3 1l9.63-9.76z"/><path fill="#ffd500" d="m12.93 12-9.63 9.75c.5.54 1.27.64 1.9.28l11.28-6.47z"/><path fill="#ff3a44" d="m12.93 12 3.55 3.56 3.96-2.27c.75-.43.75-1.5 0-1.93l-3.91-2.25z"/><path fill="#00ef77" d="M3.3 2.25 12.93 12l3.6-2.89L5.2 2.07a1.62 1.62 0 0 0-1.9.18z"/></svg><span>Get it on Google Play</span></a>
@@ -506,10 +525,62 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 
         <div class="field split">
           <div>
-            <label for="c-country">Country</label>
-            <select id="c-country" name="country">
+            <label for="c-country">Country <span class="opt">Required</span></label>
+            <select id="c-country" name="country" required>
               <option value="">Select</option>
               <option>United States</option>
+              <option>Canada</option>
+              <option>Albania</option>
+              <option>Andorra</option>
+              <option>Armenia</option>
+              <option>Austria</option>
+              <option>Azerbaijan</option>
+              <option>Belarus</option>
+              <option>Belgium</option>
+              <option>Bosnia and Herzegovina</option>
+              <option>Bulgaria</option>
+              <option>Croatia</option>
+              <option>Cyprus</option>
+              <option>Czechia</option>
+              <option>Denmark</option>
+              <option>Estonia</option>
+              <option>Finland</option>
+              <option>France</option>
+              <option>Georgia</option>
+              <option>Germany</option>
+              <option>Greece</option>
+              <option>Hungary</option>
+              <option>Iceland</option>
+              <option>Ireland</option>
+              <option>Italy</option>
+              <option>Kazakhstan</option>
+              <option>Kosovo</option>
+              <option>Latvia</option>
+              <option>Liechtenstein</option>
+              <option>Lithuania</option>
+              <option>Luxembourg</option>
+              <option>Malta</option>
+              <option>Moldova</option>
+              <option>Monaco</option>
+              <option>Montenegro</option>
+              <option>Netherlands</option>
+              <option>North Macedonia</option>
+              <option>Norway</option>
+              <option>Poland</option>
+              <option>Portugal</option>
+              <option>Romania</option>
+              <option>Russia</option>
+              <option>San Marino</option>
+              <option>Serbia</option>
+              <option>Slovakia</option>
+              <option>Slovenia</option>
+              <option>Spain</option>
+              <option>Sweden</option>
+              <option>Switzerland</option>
+              <option>Türkiye</option>
+              <option>Ukraine</option>
+              <option>United Kingdom</option>
+              <option>Vatican City</option>
             </select>
           </div>
           <div></div>
@@ -517,8 +588,8 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
 
         <div class="field split">
           <div>
-            <label for="c-platform">Main platform</label>
-            <select id="c-platform" name="platform">
+            <label for="c-platform">Main platform <span class="opt">Required</span></label>
+            <select id="c-platform" name="platform" required>
               <option value="">Select</option>
               <option>Instagram</option>
               <option>TikTok</option>
@@ -527,8 +598,8 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
             </select>
           </div>
           <div>
-            <label for="c-followers">Followers there</label>
-            <input type="text" id="c-followers" name="followers" placeholder="e.g. 42000" inputmode="numeric">
+            <label for="c-followers">Followers there <span class="opt">Required · under 150K</span></label>
+            <input type="number" id="c-followers" name="followers" min="0" max="149999" step="1" required placeholder="e.g. 42000" inputmode="numeric">
           </div>
         </div>
 
@@ -548,9 +619,11 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
         <div class="field">
           <label>Preferred payout method</label>
           <div class="payout-options" role="radiogroup" aria-label="Preferred payout method">
-            <label class="payout-option"><input type="radio" name="payoutMethod" value="venmo" checked><span>Venmo</span></label>
-            <label class="payout-option"><input type="radio" name="payoutMethod" value="apple_cash"><span>Apple Cash</span></label>
+            <label class="payout-option" data-us-only><input type="radio" name="payoutMethod" value="venmo" checked><span>Venmo</span></label>
+            <label class="payout-option" data-us-only><input type="radio" name="payoutMethod" value="apple_cash"><span>Apple Cash</span></label>
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="paypal"><span>PayPal</span></label>
           </div>
+          <div class="hint" style="margin-top:7px">PayPal is required for creators outside the United States.</div>
         </div>
 
         <div class="field split">
@@ -683,6 +756,11 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
           <div><h3>You get paid</h3><p>We confirm approvals with GoWish, then send you $<span class="v-manager">10</span> per approved creator through your preferred payout method.</p></div>
         </li>
       </ol>
+      <a class="app-identity" href="https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923" target="_blank" rel="noopener noreferrer">
+        <img src="assets/gowish-app-icon.jpg" alt="GoWish app icon" width="50" height="50">
+        <span class="app-identity-copy"><strong>GoWish</strong><span>Official app on the App Store</span></span>
+        <span class="app-identity-arrow" aria-hidden="true">&nearr;</span>
+      </a>
     </div>
     <div class="note info">
       <b>The honest version of the deal.</b> GoWish pays us per approved creator. We pass a share to you and a share to the creator, and keep the rest. That is the whole arrangement, and it is why payment is tied to approvals rather than sign-ups.
@@ -727,6 +805,7 @@ input.err,select.err{border-color:var(--red);background:#FFFCFC}
           <div class="payout-options" role="radiogroup" aria-label="Preferred payout method">
             <label class="payout-option"><input type="radio" name="payoutMethod" value="venmo" checked><span>Venmo</span></label>
             <label class="payout-option"><input type="radio" name="payoutMethod" value="apple_cash"><span>Apple Cash</span></label>
+            <label class="payout-option"><input type="radio" name="payoutMethod" value="paypal"><span>PayPal</span></label>
           </div>
         </div>
 
@@ -925,11 +1004,29 @@ function syncPayoutFields(form, clearDestination){
   const prefix = form.querySelector('[data-payout-prefix]');
   if(clearDestination) destination.value = '';
   const appleCash = method === 'apple_cash';
-  label.textContent = appleCash ? 'Apple Cash phone number or email' : 'Your Venmo handle';
-  hint.textContent = appleCash ? 'Use the phone number or email associated with Apple Cash.' : 'Where we send your payout.';
-  prefix.classList.toggle('plain', appleCash);
-  destination.placeholder = appleCash ? 'Phone number or email' : '';
-  destination.inputMode = appleCash ? 'text' : 'text';
+  const paypal = method === 'paypal';
+  label.textContent = paypal ? 'PayPal email' : appleCash ? 'Apple Cash phone number or email' : 'Your Venmo handle';
+  hint.textContent = paypal ? 'Use the email connected to the PayPal account that should receive the payout.' : appleCash ? 'Use the phone number or email associated with Apple Cash.' : 'Where we send your payout.';
+  prefix.classList.toggle('plain', appleCash || paypal);
+  destination.placeholder = paypal ? 'you@example.com' : appleCash ? 'Phone number or email' : '';
+  destination.inputMode = paypal ? 'email' : 'text';
+  destination.type = paypal ? 'email' : 'text';
+  destination.autocomplete = paypal ? 'email' : 'off';
+}
+
+function syncCreatorPayoutMethods(clearDestination){
+  const form = document.getElementById('creatorForm');
+  const country = form.querySelector('[name="country"]').value;
+  const paypalOnly = country && country !== 'United States';
+  form.querySelectorAll('[data-us-only]').forEach(option=>{
+    option.hidden = Boolean(paypalOnly);
+    option.querySelector('input').disabled = Boolean(paypalOnly);
+  });
+  const selected = form.querySelector('[name="payoutMethod"]:checked');
+  if(paypalOnly && selected.value !== 'paypal'){
+    form.querySelector('[name="payoutMethod"][value="paypal"]').checked = true;
+    syncPayoutFields(form, clearDestination);
+  }
 }
 
 function fail(boxId, msg){
@@ -984,6 +1081,7 @@ function boot(){
   }
 
   document.querySelectorAll('#creatorForm, #managerForm').forEach(form=>syncPayoutFields(form, false));
+  syncCreatorPayoutMethods(false);
 
   go(location.hash === '#manager' ? 'manager' : 'main');
 }
@@ -1027,6 +1125,13 @@ document.getElementById('creatorForm').addEventListener('submit', async e=>{
   if(bad){ fail('cErr','Fill in the highlighted fields.'); bad.focus(); return; }
   if(!document.getElementById('c-agree').checked){
     fail('cErr','Tick the box to confirm you have created your GoWish account.'); return;
+  }
+  const followers = Number(form.elements.followers.value);
+  if(!Number.isInteger(followers) || followers < 0 || followers >= 150000){
+    form.elements.followers.classList.add('err');
+    fail('cErr','Your selected main platform must have fewer than 150,000 followers.');
+    form.elements.followers.focus();
+    return;
   }
 
   busy(btn, true);
@@ -1083,6 +1188,8 @@ document.getElementById('managerForm').addEventListener('submit', async e=>{
 document.querySelectorAll('input[name="payoutMethod"]').forEach(input=>{
   input.addEventListener('change', ()=>syncPayoutFields(input.form, true));
 });
+
+document.getElementById('c-country').addEventListener('change', ()=>syncCreatorPayoutMethods(true));
 
 document.getElementById('mCopy').addEventListener('click', async ()=>{
   const input = document.getElementById('mLink');

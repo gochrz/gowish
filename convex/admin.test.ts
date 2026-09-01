@@ -303,6 +303,23 @@ describe("admin operations", () => {
     await expect(t.query(internal.admin.listManagers, { limit: 501 })).rejects.toThrow("between 1 and 200");
   });
 
+  test("lists international PayPal creator details", async () => {
+    const t = setup();
+    await t.mutation(internal.creators.submit, {
+      ...creatorArgs("international"),
+      country: "United Kingdom",
+      payoutMethod: "paypal",
+      payoutDestination: "international.payments@example.com",
+    });
+
+    const rows = await t.query(internal.admin.listCreators, { limit: 20 });
+    expect(rows[0]).toMatchObject({
+      country: "United Kingdom",
+      payoutMethod: "paypal",
+      payoutDestination: "international.payments@example.com",
+    });
+  });
+
   test("supports the existing admin page contract with audited undo and notes", async () => {
     const t = setup();
     const submitted = await t.mutation(internal.creators.submit, creatorArgs("contract"));

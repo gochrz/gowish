@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { recordAudit } from "./audit";
+import {
+  normalizeEligibleCountry,
+  normalizeFollowerCount,
+  requireCreatorPayoutMethod,
+} from "./eligibility";
 import { limitRegistration } from "./rateLimits";
 import { payoutMethod, platform } from "./schema";
 import { changeProgramStats } from "./stats";
@@ -19,14 +24,6 @@ const creatorBonusAmount = 20;
 const managerBonusAmount = 10;
 const partnerRevenueAmount = 60;
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function normalizeFollowers(value: string) {
-  const normalized = required(value, 40, "Followers").replace(/[\s,]/g, "");
-  if (!/^\d{1,12}$/.test(normalized)) {
-    throw businessError("Followers must be a number.");
-  }
-  return normalized;
-}
 
 function dateStamp(timestamp: number) {
   const date = new Date(timestamp);
@@ -67,10 +64,10 @@ export const submit = internalMutation({
   handler: async (ctx, args) => {
     await limitRegistration(ctx, required(args.rateLimitKey, 128, "Rate limit key"));
 
-    const country = required(args.country, 80, "Country");
-    if (country !== "United States") {
-      throw businessError("This program is currently open to creators in the United States only.");
-    }
+    const country = normalizeEligibleCountry(args.country);
+    const followers = normalizeFollowerCount(args.followers);
+    const payout = normalizePayout(args.payoutMethod, args.payoutDestination, args.payoutLegalName);
+    requireCreatorPayoutMethod(country, payout.payoutMethod);
 
     const consent = requireConsent(
       args.consentAccepted,
@@ -122,7 +119,6 @@ export const submit = internalMutation({
       throw new Error("Could not allocate a unique creator reference.");
     }
 
-    const payout = normalizePayout(args.payoutMethod, args.payoutDestination, args.payoutLegalName);
     const creatorId = await ctx.db.insert("creators", {
       reference,
       fullName: required(args.fullName, 120, "Name"),
@@ -132,7 +128,7 @@ export const submit = internalMutation({
       country,
       platform: args.platform,
       handle: normalizeHandle(args.handle, "Social handle"),
-      followers: normalizeFollowers(args.followers),
+      followers,
       otherHandles: optional(args.otherHandles, 300, "Other handles"),
       ...payout,
       managerCode: manager?.code,

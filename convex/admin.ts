@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { recordAudit } from "./audit";
+import { requireCreatorPayoutMethod } from "./eligibility";
 import { attributionState, creatorStatus, payoutMethod } from "./schema";
 import { changeProgramStats, ensureProgramStats } from "./stats";
 import {
@@ -29,7 +30,7 @@ const creatorRow = v.object({
   contactEmail: v.string(),
   gowishEmail: v.string(),
   phone: v.string(),
-  country: v.literal("United States"),
+  country: v.string(),
   platform: v.union(v.literal("Instagram"), v.literal("TikTok"), v.literal("YouTube"), v.literal("Other")),
   handle: v.string(),
   followers: v.string(),
@@ -544,6 +545,7 @@ export const updateCreator = internalMutation({
         args.payoutDestination ?? creator.payoutDestination,
         args.payoutLegalName ?? creator.payoutLegalName,
       );
+      requireCreatorPayoutMethod(creator.country, payout.payoutMethod);
       const payoutChanged =
         payout.payoutMethod !== creator.payoutMethod ||
         payout.payoutDestination !== creator.payoutDestination ||

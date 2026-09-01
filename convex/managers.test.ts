@@ -127,6 +127,34 @@ describe("manager registration", () => {
     ).rejects.toThrow("Apple Cash phone number or email is invalid");
   });
 
+  test("stores a normalized PayPal email", async () => {
+    const t = setup();
+    await t.mutation(internal.managers.register, {
+      ...registration,
+      payoutMethod: "paypal",
+      payoutDestination: " Morgan.Payments@Example.COM ",
+    });
+
+    const managers = await t.run((ctx) => ctx.db.query("managers").collect());
+    expect(managers[0]).toMatchObject({
+      payoutMethod: "paypal",
+      payoutDestination: "morgan.payments@example.com",
+      payoutLegalName: "Morgan Reed",
+    });
+  });
+
+  test("rejects an invalid PayPal email", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.managers.register, {
+        ...registration,
+        payoutMethod: "paypal",
+        payoutDestination: "morgan-payments",
+      }),
+    ).rejects.toThrow("PayPal email does not look right");
+  });
+
   test("rejects unsupported manager consent versions", async () => {
     const t = setup();
 

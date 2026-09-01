@@ -4,6 +4,7 @@ import test from "node:test";
 
 const readPage = (name) => readFile(new URL(`../vercel-site/${name}`, import.meta.url), "utf8");
 const readOptionalPage = (name) => readPage(name).catch(() => "");
+const readAsset = (name) => readFile(new URL(`../vercel-site/${name}`, import.meta.url));
 
 test("public page targets the development HTTP endpoint", async () => {
   const html = await readPage("index.html");
@@ -52,21 +53,38 @@ test("public page records both consent versions", async () => {
   assert.match(html, /consentAccepted/);
 });
 
-test("public page presents the United States as the only eligible country", async () => {
+test("public page lists the approved creator geography", async () => {
   const html = await readPage("index.html");
   const country = html.match(/<select id="c-country"[\s\S]*?<\/select>/)?.[0] ?? "";
   assert.match(country, /<option>United States<\/option>/);
+  assert.match(country, /<option>Canada<\/option>/);
+  assert.match(country, /<option>United Kingdom<\/option>/);
+  assert.match(country, /<option>France<\/option>/);
+  assert.match(country, /<option>Türkiye<\/option>/);
+  assert.match(country, /<option>Kosovo<\/option>/);
   assert.doesNotMatch(country, /<option>Other<\/option>/);
 });
 
-test("public forms offer Venmo or Apple Cash with conditional payout details", async () => {
+test("public forms offer PayPal with country-specific payout details", async () => {
   const html = await readPage("index.html");
   assert.match(html, /name="payoutMethod"[^>]*value="venmo"/);
   assert.match(html, /name="payoutMethod"[^>]*value="apple_cash"/);
+  assert.equal(html.split('name="payoutMethod" value="paypal"').length - 1, 2);
   assert.match(html, /Apple Cash phone number or email/);
+  assert.match(html, /PayPal email/);
   assert.match(html, /payoutDestination/);
   assert.match(html, /payoutLegalName/);
   assert.match(html, /syncPayoutFields/);
+  assert.match(html, /syncCreatorPayoutMethods/);
+  assert.match(html, /PayPal is required for creators outside the United States/);
+});
+
+test("creator eligibility fields are required and cap the selected platform below 150K", async () => {
+  const html = await readPage("index.html");
+  assert.match(html, /<select id="c-country" name="country" required>/);
+  assert.match(html, /<select id="c-platform" name="platform" required>/);
+  assert.match(html, /<input type="number" id="c-followers" name="followers"[^>]*min="0"[^>]*max="149999"[^>]*required/);
+  assert.match(html, /Required[^<]*under 150K/);
 });
 
 test("public copy does not promise Venmo as the only payout method", async () => {
@@ -116,6 +134,16 @@ test("both download areas show accessible app store icons", async () => {
   assert.equal(html.split('class="store-icon store-icon-google-play" aria-hidden="true"').length - 1, 2);
 });
 
+test("creator and manager instructions link the official GoWish app icon", async () => {
+  const html = await readPage("index.html");
+  const appStore = "https://apps.apple.com/us/app/gowish-your-digital-wishlist/id1605170923";
+  assert.equal(html.split('class="app-identity"').length - 1, 2);
+  assert.equal(html.split('src="assets/gowish-app-icon.jpg"').length - 1, 2);
+  assert.ok(html.split(appStore).length - 1 >= 4);
+  const icon = await readAsset("assets/gowish-app-icon.jpg");
+  assert.ok(icon.length > 10_000);
+});
+
 test("creator confirmation gives actionable app steps without email or story instructions", async () => {
   const html = await readPage("index.html");
   const confirmation = html.match(/<div class="view" id="v-done">([\s\S]*?)<div class="view" id="v-manager">/)?.[1] ?? "";
@@ -146,6 +174,8 @@ test("admin page displays and edits normalized payout details", async () => {
   assert.match(html, /editPayoutMethod/);
   assert.match(html, /editPayoutDestination/);
   assert.match(html, /editPayoutName/);
+  assert.match(html, /<option value="paypal">PayPal<\/option>/);
+  assert.match(html, /method === 'paypal' \? 'PayPal'/);
   assert.doesNotMatch(html, /<th>Venmo<\/th>/);
 });
 

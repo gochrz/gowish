@@ -230,7 +230,7 @@ dialog::backdrop{background:rgba(15,19,25,.5)}
     <div class="fieldgrid">
       <label>Contact email<input type="text" id="editContact"></label>
       <label>GoWish email<input type="text" id="editGowish"></label>
-      <label>Payout method<select id="editPayoutMethod"><option value="venmo">Venmo</option><option value="apple_cash">Apple Cash</option></select></label>
+      <label>Payout method<select id="editPayoutMethod"><option value="venmo">Venmo</option><option value="apple_cash">Apple Cash</option><option value="paypal">PayPal</option></select></label>
       <label>Payout destination<input type="text" id="editPayoutDestination"></label>
       <label>Payout name<input type="text" id="editPayoutName"></label>
       <label style="grid-column:1/-1">Notes<input type="text" id="editNotes"></label>
@@ -248,7 +248,7 @@ const selected = new Set();
 
 const $ = id => document.getElementById(id);
 const money = n => '$' + Number(n || 0).toLocaleString();
-const payoutLabel = method => method === 'apple_cash' ? 'Apple Cash' : 'Venmo';
+const payoutLabel = method => method === 'apple_cash' ? 'Apple Cash' : method === 'paypal' ? 'PayPal' : 'Venmo';
 
 function msg(id, text){
   const el = $(id);

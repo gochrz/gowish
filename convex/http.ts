@@ -142,7 +142,7 @@ function platformValue(body: Record<string, unknown>) {
 
 function payoutMethodValue(body: Record<string, unknown>) {
   const value = body.payoutMethod;
-  if (value === "venmo" || value === "apple_cash") return value;
+  if (value === "venmo" || value === "apple_cash" || value === "paypal") return value;
   throw new HttpError(400, "Invalid payout method.");
 }
 

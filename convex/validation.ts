@@ -36,7 +36,7 @@ export function normalizeHandle(value: string, field: string) {
   return `@${normalized}`;
 }
 
-export type PayoutMethod = "venmo" | "apple_cash";
+export type PayoutMethod = "venmo" | "apple_cash" | "paypal";
 
 export function normalizePayout(method: PayoutMethod, destination: string, legalName: string) {
   const payoutLegalName = required(legalName, 120, "Payout name");
@@ -44,6 +44,14 @@ export function normalizePayout(method: PayoutMethod, destination: string, legal
     return {
       payoutMethod: method,
       payoutDestination: normalizeHandle(destination, "Venmo handle"),
+      payoutLegalName,
+    };
+  }
+
+  if (method === "paypal") {
+    return {
+      payoutMethod: method,
+      payoutDestination: normalizeEmail(destination, "PayPal email"),
       payoutLegalName,
     };
   }

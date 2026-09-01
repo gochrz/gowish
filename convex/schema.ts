@@ -23,6 +23,7 @@ export const platform = v.union(
 export const payoutMethod = v.union(
   v.literal("venmo"),
   v.literal("apple_cash"),
+  v.literal("paypal"),
 );
 
 export default defineSchema({
@@ -61,7 +62,7 @@ export default defineSchema({
     contactEmail: v.string(),
     gowishEmail: v.string(),
     phone: v.optional(v.string()),
-    country: v.literal("United States"),
+    country: v.string(),
     platform,
     handle: v.string(),
     followers: v.string(),

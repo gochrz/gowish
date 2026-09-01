@@ -116,6 +116,42 @@ describe("HTTP routes", () => {
     expect(creator.id).toMatch(/^C\d{6}-/);
   });
 
+  test("accepts PayPal for managers and international creators", async () => {
+    const t = setup();
+    const managerResponse = await post(t, "/api", {
+      action: "registerManager",
+      fullName: "Morgan Reed",
+      email: "morgan@example.com",
+      payoutMethod: "paypal",
+      payoutDestination: "morgan.payments@example.com",
+      payoutLegalName: "Morgan Reed",
+      estCreators: "6 to 20",
+      consentAccepted: true,
+      consentVersion: "manager-2026-08-31",
+      website: "",
+    });
+    expect(managerResponse.status).toBe(200);
+
+    const creatorResponse = await post(t, "/api", {
+      action: "submitCreator",
+      fullName: "Casey Lane",
+      contactEmail: "casey@example.com",
+      gowishEmail: "casey.gowish@example.com",
+      country: "United Kingdom",
+      platform: "Instagram",
+      handle: "@caseycreates",
+      followers: "149999",
+      payoutMethod: "paypal",
+      payoutDestination: "casey.payments@example.com",
+      payoutLegalName: "Casey Lane",
+      consentAccepted: true,
+      consentVersion: "creator-2026-08-31",
+      website: "",
+    });
+    expect(creatorResponse.status).toBe(200);
+    expect(await body(creatorResponse)).toMatchObject({ ok: true });
+  });
+
   test("rejects untrusted origins, oversized bodies, and missing consent", async () => {
     const t = setup();
     const badOrigin = await post(
